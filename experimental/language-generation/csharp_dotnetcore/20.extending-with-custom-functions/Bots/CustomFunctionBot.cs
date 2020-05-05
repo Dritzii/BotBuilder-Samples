@@ -25,29 +25,20 @@ namespace Microsoft.BotBuilderSamples.Bots
             // prefix all functions with your namespace to avoid collisions.
             const string mySqrtFnName = "contoso.sqrt";
 
-            // define evaluator for the custom function.
-            ExpressionEvaluator sqrtDelegate = new ExpressionEvaluator(
-                    mySqrtFnName,
-                    ExpressionFunctions.Apply(
-                        args =>
-                        {
-                            object retValue = null;
-                            if (args[0] != null)
-                            {
-                                double dblValue;
-                                if (double.TryParse(args[0], out dblValue))
-                                {
-                                    retValue = Math.Sqrt(dblValue);
-                                }
-                            }
-                            return retValue;
-                        },
-                        ExpressionFunctions.VerifyStringOrNull),
-                    ReturnType.Number,
-                    ExpressionFunctions.ValidateUnary);
-
-            // add the custom function
-            Expression.Functions.Add(mySqrtFnName, sqrtDelegate);
+            // Add custom sqrt function
+            Expression.Functions.Add(mySqrtFnName, (args) =>
+            {
+                object retValue = null;
+                if (args[0] != null)
+                {
+                    double dblValue;
+                    if (double.TryParse(args[0], out dblValue))
+                    {
+                        retValue = Math.Sqrt(dblValue);
+                    }
+                }
+                return retValue;
+            });
 
             // by default this uses Expression.Functions which would include the custom function added above.
             _templates = Templates.ParseFile(lgFilePath);
