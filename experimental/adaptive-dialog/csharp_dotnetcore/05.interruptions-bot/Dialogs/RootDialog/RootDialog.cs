@@ -125,7 +125,12 @@ namespace Microsoft.BotBuilderSamples
                             Condition = "$foreach.value.name != turn.activity.recipient.name",
                             Actions = new List<Dialog>()
                             {
-                                new SendActivity("${WelcomeUser()}")
+                                new SendActivity("${WelcomeUser()}"),
+                                new SetProperty()
+                                {
+                                    Property = "user.profile",
+                                    Value = "={}"
+                                }
                             }
                         }
                     }
