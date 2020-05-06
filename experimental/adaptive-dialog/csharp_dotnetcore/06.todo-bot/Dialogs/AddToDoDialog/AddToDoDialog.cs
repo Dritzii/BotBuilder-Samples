@@ -45,7 +45,7 @@ namespace Microsoft.BotBuilderSamples
                             // This is the title entity defined in ../RootDialog/RootDialog.lu.
                             // There is one LUIS application for this bot. So any entity captured by the rootDialog
                             // will be automatically available to child dialog.
-                            // @EntityName is a short-hand for turn.entities.<EntityName>. Other useful short-hands are 
+                            // @EntityName is a short-hand for turn.recognized.entities.<EntityName>. Other useful short-hands are 
                             //     #IntentName is a short-hand for turn.intents.<IntentName>
                             //     $PropertyName is a short-hand for dialog.<PropertyName>
                             new SetProperties()
