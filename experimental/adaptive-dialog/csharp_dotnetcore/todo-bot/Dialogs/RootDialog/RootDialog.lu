@@ -1,95 +1,93 @@
-﻿> Application description
-> !# @app.name = ToDo-Bot-Sample-With-Adaptive-Dialogs
-> !# @app.desc = Todo bot sample from BotBuilder-Samples - Adaptive dialogs
-> !# @app.culture = en-us
-
-> Entity definitions 
-@ simple todoTitle
-
-> Add a Phrase List with todo variations. Mark them as interchangeable.
-@ phraselist todoItem(interchangeable)
-   - todo
-   - todos
-   - to dos
-   - todo list
-   - todos list
-   - item list
-   - items collection
-   - collection
-   - list
-
-> Help intent will be handled contextually based on the active dialog.
-# Help
-- What can I say? 
-- Who are you?
-- I need help
-- Not sure what I can do
-- What do you want me to say?
-- What can you do?
-- What can you help with?
-- help please
-- What are my options?
-- well, I do not know what my todo's title is
-- I do not know
-- can you please help?
-
-# Greeting
-- hi
-- hello
-- hiya
-- how are you? 
-- how do you do?
-
-> Cancel intent will be handled contextually based on the active dialog.
-# Cancel
-- cancel
-- cancel all
-- stop that
-- do not do it
-- abort
-- please stop what you are doing
-- I changed my mind
-- cancel add todo
-- cancel that
-- I do not want to add a todo
-- No todo for me
-- Cancel this
-- cancel delete todo
-- Let's just leave it as is
-- I do not wish to delete my todo anymore
-- Keep my todos as is
-- No todo for me
-
-# AddToDoDialog
+﻿
+# AddItem
 - Add todo
 - add a to do item
-- Please remind me to {@todoTitle=buy milk}
-- Please remember that I need to {@todoTitle=buy milk}
-- I need you to remember that {@todoTitle=my wife's birthday is Jan 9th}
-- Add a todo named {@todoTitle=send report over this weekend}
-- Add {@todoTitle=get a new car} to the todo list
-- Add {@todoTitle=write a spec} to the list
-- Add {@todoTitle=finish this demo} to my todo list
+- Please remind me to {itemTitle=buy milk}
+- Please remember that I need to {itemTitle=buy milk}
+- I need you to remember that {itemTitle=my wife's birthday is Jan 9th}
+- Add a todo named {itemTitle=send report over this weekend}
+- Add {itemTitle=get a new car} to the todo list
+- Add {itemTitle=write a spec} to the list
+- Add {itemTitle=finish this demo} to my todo list
+- add a todo item {itemTitle=vacuuming by october 3rd}
+- add {itemTitle=call my mother} to my todo list
+- add {itemTitle=due date august to peanut butter jelly bread milk} on todos list
+- add {itemTitle=go running} to my todos
+- add to my todos list {itemTitle=mail the insurance forms out by saturday}
+- can i add {itemTitle=shirts} on the todos list
+- could i add {itemTitle=medicine} to the todos list
+- would you add {itemTitle=heavy cream} to the todos list
+- add {itemTitle} to my todo list
+- add a to do that {itemTitle=purchase a nice sweater}
+- add a to do to {itemTitle=buy shoes}
+- add an task of {itemTitle=chores to do around the house}
+- add {itemTitle=go to whole foods} in my to do list
+- add {itemTitle=reading} to my to do list
+- add this thing in to do list
+- add to my to do list {itemTitle=pick up clothes}
+- add to my to do list {itemTitle=print papers for 10 copies this afternoon}
+- create to do
+- create to do that {itemTitle=read a book tonight}
+- create to do to {itemTitle=go running in the park}
+- put {itemTitle=hikes} on my to do list
+- remind me to {itemTitle = pick up dry cleaning}
+- new to do
 - add another one
 - add
 > Add patterns
-- Please remember [to] {@todoTitle}
-- I need you to remember [that] {@todoTitle}
-- Add a todo named {@todoTitle}
-- Add {@todoTitle} to the list
-- [Please] add {@todoTitle} to the todo list
-- Add {@todoTitle} to my todo
+- Please remember [to] {itemTitle}
+- I need you to remember [that] {itemTitle}
+- Add a todo named {itemTitle}
+- Add {itemTitle} to the list
+- [Please] add {itemTitle} to the todo list
+- Add {itemTitle} to my todo
+- add {itemTitle} to my to do list
+- add {itemTitle} to my to dos
+- add a to do that buy {itemTitle}
+- add a to do that purchase {itemTitle}
+- add a to do that shop {itemTitle}
+- add a to do to {itemTitle}
+- add to do that {itemTitle}
+- add to do to {itemTitle}
+- create a to do to {itemTitle}
+- create to do to {itemTitle}
+- remind me to {itemTitle}
 
-# DeleteToDoDialog
+> entity definitions
+@ ml itemTitle
+
+@ list listType = 
+- todo :
+    - to do
+    - todos
+    - laundry            
+- grocery :
+    - groceries
+    - fruits
+    - vegetables
+    - household items
+    - house hold items
+- shopping : 
+    - shopping 
+    - shop
+    - shoppers
+
+> phrase list definitions
+@ phraseList addItem(interchangeable) = 
+	- add
+	- put
+	- plus
+
+# DeleteItem
 - Remove todo
-- Mark {@todoTitle = buy milk} as complete
-- Flag {@todoTitle = first one} as done
-- Remove {@todoTitle = finish this demo} from the todo list
+- Mark {itemTitle = buy milk} as complete
+- Flag {itemTitle = first one} as done
+- Remove {itemTitle = finish this demo} from the todo list
 - remove another one
 - remove
-- clear my todo named {@todoTitle = get a new car}
+- clear my todo named {itemTitle = get a new car}
 - I'm done with the first todo
-- I finished the {@todoIdx = last} todo
+- I finished the las todo
 - Remove the first todo
 - Delete todo
 - Clear my todos
@@ -97,15 +95,56 @@
 - Remove all my todo
 - Forget the list
 - Purge the todo list
+- can you delete {itemTitle=todo1}
+- can you delete {itemTitle=xxx} item
+- delete {itemTitle=eggs} from list
+- delete off {itemTitle=pancake mix} on the shopping list
+- delete {itemTitle=shampoo} from shopping list
+- delete {itemTitle=shirts} from list
+- delete task {itemTitle=go fishing}
+- delete task {itemTitle=go to cinema tonight}
+- delete the item {itemTitle=buy socks} from my todo list
+- delete the second task in my shopping list
+- delete the task {itemTitle=house cleanup this weekend}
+- delete the task that {itemTitle=hit the gym every morning}
+- delete the to do {itemTitle=meet my friends tomorrow}
+- delete the to do that {itemTitle=daily practice piano}
+- delete the to do that {itemTitle=meet john when he come here the next friday}
+- delete to do {itemTitle=buy milk}
+- delete to do {itemTitle=go shopping}
+- delete to do that {itemTitle=go hiking tomorrow}
+- erase {itemTitle=bananas} from shopping list
+- erase {itemTitle=peanuts} on the shopping list
+- remove {itemTitle=asprin} from shopping list
+- remove {itemTitle=black shoes} from shopping list
+- remove {itemTitle=class} from todo list
+- remove {itemTitle=salad vegetables} from grocery list
+- remove task {itemTitle=buy dog food}
+- remove task {itemTitle=go shopping}
+- remove task that {itemTitle=go hiking this weekend}
+- remove task that {itemTitle=lawn mowing}
+- remove the item {itemTitle=paris} from my list
+- remove the task that {itemTitle=go to library after work}
+- remove the to do {itemTitle=physical examination}
+- remove the to do that {itemTitle=pick tom up at six p.m.}
+- remove to do {itemTitle=go to the gym}
+- remove to do that {itemTitle=go to the dentist tomorrow morning}
 > Add patterns
-- I did {@todoTitle}
-- I completed {@todoTitle}
-- Delete {@todoTitle}
-- Mark {@todoTitle} as complete
-- Remove {@todoTitle} from my [todo] list
-- [Please] delete {@todoTitle} from the list
+- I did {itemTitle}
+- I completed {itemTitle}
+- Delete {itemTitle}
+- Mark {itemTitle} as complete
+- Remove {itemTitle} from my [todo] list
+- [Please] delete {itemTitle} from the list
 
-# ViewToDoDialog
+> phrase list definitions
+@ phraseList deleteItem(interchangeable) = 
+	- remove
+	- delete
+	- get
+	- erase
+
+# ViewItem
 - show my todo
 - can you please show my todos?
 - please show my todo list
@@ -123,4 +162,42 @@
 - can you show my todo
 - see todo
 - I would like to see my todos list
+- show all my lists
+- show my lists
+- what do i have on my list?
 
+# GetUserProfile
+- get started
+- my name is {@userName}
+- Profile
+
+> Add prebuilt entity to recognize user name.
+@ prebuilt personName hasRoles userName
+
+# Help
+- what can you do?
+- I need help
+- help please
+- What can I say?
+
+# Cancel
+- cancel
+- cancel that
+- stop that
+- abort
+
+# ConfirmInput
+- yes
+- no
+
+> Add confirmation list entity type
+@ list confirmation = 
+- yes : 
+	- yeah
+	- ok
+	- yup
+- no :
+    - nope
+    - not now
+    - not really
+    - go back               

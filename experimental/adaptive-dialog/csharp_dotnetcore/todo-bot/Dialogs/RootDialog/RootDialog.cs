@@ -9,6 +9,9 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using System.IO;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using System.Runtime.InteropServices;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 
 namespace Microsoft.BotBuilderSamples
 {
@@ -45,33 +48,41 @@ namespace Microsoft.BotBuilderSamples
                             new SendActivity("${HelpRootDialog()}") 
                             } 
                     },
-                    new OnIntent("AddToDoDialog")    
+                    new OnIntent("AddItem")    
                     { 
                         // LUIS returns a confidence score with intent classification. 
                         // Conditions are expressions. 
                         // This expression ensures that this trigger only fires if the confidence score for the 
                         // AddToDoDialog intent classification is at least 0.7
-                        Condition = "#AddToDoDialog.Score >= 0.5",
+                        Condition = "#AddItem.Score >= 0.5",
                         Actions = new List<Dialog>() 
                         { 
                             new BeginDialog(nameof(AddToDoDialog)) 
                         } 
                     },
-                    new OnIntent("DeleteToDoDialog") 
+                    new OnIntent("DeleteItem") 
                     { 
-                        Condition = "#DeleteToDoDialog.Score >= 0.5",
+                        Condition = "#DeleteItem.Score >= 0.5",
                         Actions = new List<Dialog>() 
                         { 
                             new BeginDialog(nameof(DeleteToDoDialog)) 
                         } 
                     },
-                    new OnIntent("ViewToDoDialog")   
+                    new OnIntent("ViewItem")   
                     { 
-                        Condition = "#ViewToDoDialog.Score >= 0.5",
+                        Condition = "#ViewItem.Score >= 0.5",
                         Actions = new List<Dialog>() 
                         { 
                             new BeginDialog(nameof(ViewToDoDialog)) 
                         } 
+                    },
+                    new OnIntent("GetUserProfile")
+                    {
+                        Condition = "#GetUserProfile.Score >= 0.5",
+                        Actions = new List<Dialog>()
+                        {
+                             new BeginDialog(nameof(GetUserProfileDialog))
+                        }
                     },
                     // Come back with LG template based readback for global help
                     new OnIntent("Help")             
@@ -87,13 +98,35 @@ namespace Microsoft.BotBuilderSamples
                         Condition = "#Cancel.Score >= 0.8",
                         Actions = new List<Dialog>() 
                         {
-                            // This is the global cancel in case a child dialog did not explicit handle cancel.
-                            new SendActivity("Cancelling all dialogs.."),
-                            // SendActivity supports full language generation resolution.
-                            // See here to learn more about language generation
-                            // https://github.com/Microsoft/BotBuilder-Samples/tree/master/experimental/language-generation
-                            new SendActivity("${WelcomeActions()}"),
-                            new CancelAllDialogs(),
+                            // Ask user for confirmation.
+                            // This input will still use the recognizer and specifically the confirm list entity extraction.
+                            new ConfirmInput()
+                            {
+                                Prompt = new ActivityTemplate("${Cancel.prompt()}"),
+                                Property = "turn.confirm",
+                                Value = "=@confirmation",
+                                // Allow user to intrrupt this only if we did not get a value for confirmation.
+                                AllowInterruptions = "!@confirmation"
+                            },
+                            new IfCondition()
+                            {
+                                Condition = "turn.confirm == true",
+                                Actions = new List<Dialog>()
+                                {
+                                    // This is the global cancel in case a child dialog did not explicit handle cancel.
+                                    new SendActivity("Cancelling all dialogs.."),
+                                    // SendActivity supports full language generation resolution.
+                                    // See here to learn more about language generation
+                                    // https://github.com/Microsoft/BotBuilder-Samples/tree/master/experimental/language-generation
+                                    new SendActivity("${WelcomeActions()}"),
+                                    new CancelAllDialogs(),
+                                },
+                                ElseActions = new List<Dialog>()
+                                {
+                                    new SendActivity("${CancelCancelled()}")
+                                }
+                            }
+                            
                         }
                     }
                 }
@@ -103,7 +136,7 @@ namespace Microsoft.BotBuilderSamples
             AddDialog(rootDialog);
 
             // Add all child dialogS
-            AddDialog(new AddToDoDialog());
+            AddDialog(new AddToDoDialog(configuration));
             AddDialog(new DeleteToDoDialog());
             AddDialog(new ViewToDoDialog());
 
@@ -128,7 +161,13 @@ namespace Microsoft.BotBuilderSamples
                             Condition = "$foreach.value.name != turn.activity.recipient.name",
                             Actions = new List<Dialog>()
                             {
-                                new SendActivity("${IntroMessage()}")
+                                new SendActivity("${IntroMessage()}"),
+                                // Initialize global properties for the user.
+                                new SetProperty()
+                                {
+                                    Property = "user.lists",
+                                    Value = "={todo : [], grocery : [], shopping : []}"
+                                }
                             }
                         }
                     }

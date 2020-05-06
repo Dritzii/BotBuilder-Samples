@@ -29,3 +29,12 @@
     Text = Hi, nice to meet you! I'm the todo bot. Here are some things I can help with
     ${WelcomeActions()}
 ]
+
+# Cancel.prompt
+- Are you sure you want to cancel? 
+
+# CancelAllDialogs
+- Sure, cancelling all dialogs...
+
+# CancelCancelled
+- No worries!

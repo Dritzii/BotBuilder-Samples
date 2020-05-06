@@ -10,7 +10,7 @@ This sample uses preview packages available on the [BotBuilder MyGet feed][4].
   # determine dotnet version
   dotnet --version
   ```
-- Create a [LUIS application](#LUIS-Setup)
+- Configure the necessary [LUIS applications](#LUIS-Setup) required to run this sample
 
 ## To try this sample
 
@@ -19,7 +19,6 @@ This sample uses preview packages available on the [BotBuilder MyGet feed][4].
     ```bash
     git clone https://github.com/Microsoft/botbuilder-samples.git
     ```
-
 - In a terminal, navigate to `experimental/adaptive-dialog/csharp_dotnetcore/todo-bot`
 - Run the bot from a terminal or from Visual Studio, choose option A or B.
 
@@ -55,18 +54,6 @@ This sample uses preview packages available on the [BotBuilder MyGet feed][4].
 - Enter a Bot URL of `http://localhost:3978/api/messages`
 
 ## LUIS Setup
-### Using LUIS portal
-- Navigate and sign in to [Luis.ai][5]
-- Under "My apps", click on "Import new app"
-- Click on "Choose app file (JSON format) ..."
-- Select `botbuilder-samples/experimental/adaptive-dialog/csharp_dotnetcore/todo-bot/CognitiveModels/ToDoLuisBot.luis.json
-- Once the application is imported
-    - Click on 'Train' to train the application
-    - Click on 'Publish' to publish the application.
-- Update appsettings.json
-    - You can get your 'Authoring key' by following instructions [here][9]
-    - You can get your application id and endpoint region by following instructions [here][10]
-
 ### Using CLI
 - Install [nodejs][2] version 10.14 or higher
 - Install required CLI tools
@@ -74,19 +61,13 @@ This sample uses preview packages available on the [BotBuilder MyGet feed][4].
 > npm i -g luis-apis @microsoft/botframework-cli
 ```
 - In a command prompt, navigate to `botbuilder-samples/experimental/adaptive-dialog/csharp_dotnetcore/todo-bot`
-- To parse RootDialog.lu to a LUIS json model
+- To cross-train all LUIS applications for this bot
 ```bash
-> bf luis:convert --in ./Dialogs/RootDialog/RootDialog.lu --out ./CognitiveModels/ToDoLuisBot.luis.json --force
+> bf luis:cross-train --in dialogs --out generated --config Dialogs/DialogLuHierarchy.config.json
 ```
-- To create a new LUIS application using this model. Note: You see [here][9] for instructions on getting your authoirng key.
+- To create, train and pubish LUIS applications for this bot
 ```bash
-> luis import application --in ./CognitiveModels/ToDoLuisBot.luis.json --authoringKey <YOUR-AUTHORING-KEY>
-```
-- Copy the relevant Application Id, endpoint information as well as your authoring key to appsettings.json.
-- To train and publish the LUIS application,
-```bash
-> luis train version --appId <YOUR-APP-ID> --versionId 0.1 --wait --authoringKey <YOUR-AUTHORING-KEY>
-> luis publish version --appId <YOUR-APP-ID> --versionId 0.1 --wait --authoringKey <YOUR-AUTHORING-KEY>
+> bf luis:build --in generated --out generated --authoringKey <Your LUIS Authoring key>
 ```
 
 [1]:../../README.md

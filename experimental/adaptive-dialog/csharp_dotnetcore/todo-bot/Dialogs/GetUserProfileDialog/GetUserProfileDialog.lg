@@ -1,0 +1,33 @@
+﻿[import](common.lg)
+
+# GetUserName
+- Hi, what is your name? You can  \n - state your name \n - say things like 'my name is <your name>' \n - ask 'why do you need my name' \n - say 'I'm not going to give you my name'. 
+
+# UserNameAck
+- Thanks. I have ${user.name} as your name and ${user.age} as your age.
+
+# AskUserAge.prompt
+- Hello ${user.name}, how old are you?
+
+# AskUserAge.Invalid.Prompt
+- Sorry ${this.value} does not work. I'm expecting a value between 1-150. What is your age?
+
+# AskUserAge.Default.Prompt
+- Sorry, this is not working :(. For now, I'm going to set your age to 30.
+
+# CancelUserProfile
+- Sure, cancelling user profile...
+
+# WhyName
+- I need your name to address you correctly! \n You can say things like 'My name is <your name>' to introduce yourself to me.
+
+# WhyAge
+- I just like to know your age .. no good reason! \n Try saying "I'm <your age> years old"
+
+# NoName
+- No worries. I'm going to set your name to 'Human'. \n You can say "My name is <your name>" to re-introduce yourself to me.
+
+# NoAge
+- No worries. I'm just going to assume you are 30!
+
+
