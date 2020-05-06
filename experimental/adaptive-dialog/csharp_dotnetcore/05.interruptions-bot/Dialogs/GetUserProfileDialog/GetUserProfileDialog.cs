@@ -17,19 +17,19 @@ namespace Microsoft.BotBuilderSamples
 {
     public class GetUserProfileDialog : ComponentDialog
     {
-        protected readonly IConfiguration Configuration;
+        private readonly IConfiguration configuration;
         private Templates _templates;
 
         public GetUserProfileDialog(IConfiguration configuration)
             : base(nameof(GetUserProfileDialog))
         {
-            this.Configuration = configuration;
+            this.configuration = configuration;
             _templates = Templates.ParseFile(Path.Combine(".", "Dialogs", "GetUserProfileDialog", "GetUserProfileDialog.lg"));
 
             // Create instance of adaptive dialog.
             var userProfileDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
-                Recognizer = CreateLuisRecognizer(this.Configuration),
+                Recognizer = CreateLuisRecognizer(this.configuration),
                 Generator = new TemplateEngineLanguageGenerator(_templates),
                 Triggers = new List<OnCondition>()
                 {
@@ -50,6 +50,7 @@ namespace Microsoft.BotBuilderSamples
                                     new PropertyAssignment()
                                     {
                                         Property = "user.profile.name",
+                                        
                                         // Whenever an adaptive dialog begins, any options passed in to the dialog via 'BeginDialog' are available through dialog.xxx scope.
                                         // Coalesce is a prebuilt function available as part of Adaptive Expressions. Take the first non-null value.
                                         // @EntityName is a short-hand for turn.recognized.entities.<EntityName>. Other useful short-hands are 
@@ -60,7 +61,7 @@ namespace Microsoft.BotBuilderSamples
                                     new PropertyAssignment()
                                     {
                                         Property = "user.profile.age",
-                                        Value = "=coalesce(dialog.userAge, @age"
+                                        Value = "=coalesce(dialog.userAge, @age)"
                                     }
                                 }
                             },
@@ -77,11 +78,14 @@ namespace Microsoft.BotBuilderSamples
                                     "count(this.value) <= 50"
                                 },
                                 InvalidPrompt = new ActivityTemplate("${AskFirstName.Invalid()}"),
+                                
                                 // Because we have a local recognizer, we can use it to extract entities.
                                 // This enables users to say things like 'my name is vishwac' and we only take 'vishwac' as the name.
                                 Value = "=@personName",
-                                // We are going to allow any interruption that does not include the user name.
-                                AllowInterruptions = "!@personName"
+                                
+                                // We are going to allow any interruption for a high confidence interruption intent classification .or.
+                                // when we do not get a value for the personName entity. 
+                                AllowInterruptions = "turn.recognized.score >= 0.9 || !@personName"
                             },
                             new TextInput()
                             {
@@ -101,18 +105,10 @@ namespace Microsoft.BotBuilderSamples
                             new SendActivity("${ProfileReadBack()}")
                         }
                     },
-                    // Help is handled locally
-                    new OnIntent()
-                    {
-                        Intent = "Help",
-                        Actions = new List<Dialog>()
-                        {
-                            new SendActivity("${GetProfileHelp()}")
-                        }
-                    },
                     new OnIntent()
                     {
                         Intent = "Why",
+                        
                         // Only do this only on high confidence recognition
                         Condition = "#Why.Score >= 0.9",
                         Actions = new List<Dialog>()
@@ -123,13 +119,14 @@ namespace Microsoft.BotBuilderSamples
                     new OnIntent()
                     {
                         Intent = "NoValue",
+                        
                         // Only do this only on high confidence recognition
                         Condition = "#NoValue.Score >= 0.9",
                         Actions = new List<Dialog>()
                         {
                             new IfCondition()
                             {
-                                Condition = "user.profile.name",
+                                Condition = "user.profile.name == null",
                                 Actions = new List<Dialog>()
                                 {
                                     new SetProperty()
@@ -143,7 +140,7 @@ namespace Microsoft.BotBuilderSamples
                                 {
                                     new SetProperty()
                                     {
-                                        Property = "user.profile.name",
+                                        Property = "user.profile.age",
                                         Value = "30"
                                     },
                                     new SendActivity("${NoValueForUserAgeReadBack()}")

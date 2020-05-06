@@ -3,17 +3,17 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.AI.Luis;
+using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.AI.Luis;
-using Microsoft.Bot.Connector.Authentication;
-using Microsoft.Bot.Builder.BotFramework;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Microsoft.BotBuilderSamples
 {
@@ -62,7 +62,7 @@ namespace Microsoft.BotBuilderSamples
             services.AddSingleton<RootDialog>();
 
             // Create the bot. the ASP Controller is expecting an IBot.
-            services.AddSingleton<IBot, DialogBot<RootDialog>>();
+            services.AddSingleton<IBot, InterruptionsBot<RootDialog>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

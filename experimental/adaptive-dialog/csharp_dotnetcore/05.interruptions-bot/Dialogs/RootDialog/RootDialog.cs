@@ -16,19 +16,19 @@ namespace Microsoft.BotBuilderSamples
 {
     public class RootDialog : ComponentDialog
     {
-        protected readonly IConfiguration Configuration;
+        private readonly IConfiguration configuration;
         private Templates _templates;
 
         public RootDialog(IConfiguration configuration)
             : base(nameof(RootDialog))
         {
-            this.Configuration = configuration;
+            this.configuration = configuration;
             _templates = Templates.ParseFile(Path.Combine(".", "Dialogs", "RootDialog", "RootDialog.lg"));
 
             // Create instance of adaptive dialog.
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
-                Recognizer = CreateLuisRecognizer(this.Configuration),
+                Recognizer = CreateLuisRecognizer(this.configuration),
                 Generator = new TemplateEngineLanguageGenerator(_templates),
                 Triggers = new List<OnCondition>()
                 {
@@ -87,7 +87,7 @@ namespace Microsoft.BotBuilderSamples
             // Add named dialogs to the DialogSet. These names are saved in the dialog state.
             AddDialog(rootDialog);
 
-            AddDialog(new GetUserProfileDialog(this.Configuration));
+            AddDialog(new GetUserProfileDialog(this.configuration));
 
             // The initial child Dialog to run.
             InitialDialogId = nameof(AdaptiveDialog);
