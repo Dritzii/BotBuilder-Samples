@@ -1,17 +1,13 @@
 ﻿> Language Generation definition file. 
 > See https://github.com/Microsoft/BotBuilder-Samples/tree/master/experimental/language-generation to learn more
 
+[Common](../Common/Common.lg)
+
 > Structured template with composition
 # HelpRootDialog
 [Activity
     Text = ${WelcomePrefix()}, I'm the sample bot. ${WelcomeSuffix()}
     ${WelcomeActions()}
-]
-
-> Structured template
-# WelcomeActions
-[Activity
-    SuggestedActions = Add item | View lists | Remove item | Profile | Cancel | Help
 ]
 
 # WelcomeSuffix

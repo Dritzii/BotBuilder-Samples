@@ -1,17 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.LanguageGeneration;
-using System.Security.Cryptography.Xml;
-using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -113,6 +109,33 @@ namespace Microsoft.BotBuilderSamples
                         Actions = new List<Dialog>()
                         {
                             new SendActivity("${HelpAddItem()}")
+                        }
+                    },
+                    // Shows how to use dialog event to capture intent recognition event for more than one intent.
+                    // Alternate to this would be to add two separate OnIntent events.
+                    // This ensures we set any entities recognized by these two intents.
+                    new OnDialogEvent()
+                    {
+                        Event = AdaptiveEvents.RecognizedIntent,
+                        Condition = "#GetItemTitle || #GetListType",
+                        Actions = new List<Dialog>()
+                        {
+                            new SetProperties()
+                            {
+                                Assignments = new List<PropertyAssignment>()
+                                {
+                                    new PropertyAssignment()
+                                    {
+                                        Property = "dialog.itemTitle",
+                                        Value = "=@itemTitle"
+                                    },
+                                    new PropertyAssignment()
+                                    {
+                                        Property = "dialog.listType",
+                                        Value = "=@listType"
+                                    }
+                                }
+                            }
                         }
                     }
                 }

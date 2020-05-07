@@ -1,39 +1,27 @@
 ﻿
-# GetUserName
-- my name is {@userName = vishwac}
-- I'm {@userName = tom}
-- you can call me {@userName = chris}
-- I'm {@userName = scott} and I'm {@userAge = 36} years old
-> add few patterns
-- my name is {@userName}
-
-> add entities
-@ prebuilt personName hasRoles userName
-
-
-# GetUsersAge
-- I'm {@userAge} years old
-- {@userAge = 36}
-
-@ prebuilt age hasRoles userAge
+@ prebuilt personName
+@ prebuilt age
 @ prebuilt number
 
-# Cancel
-- cancel
-- stop that
-
 # Why
-- help
-- what can I say
+- why
 - why do you need my name?
-- why age?
-- what do you need my profile for?
-- why do you ask?
-- why do you need that information? 
+- why do you ask for my age? 
+- may i know why?
+- please explain
+- what is your privacy policy?
 
 # NoValue
-- Not going to give you that
 - No name
-- no age
-- I will not give you my name
-- not going to give you that.
+- No age
+- will not give it
+- do not feel comfortable sharing it
+
+# GetInput
+- Vishwac
+- my name is vishwac
+- No my name is vishwac
+
+# Restart
+- You got my name wrong
+- That is not my age

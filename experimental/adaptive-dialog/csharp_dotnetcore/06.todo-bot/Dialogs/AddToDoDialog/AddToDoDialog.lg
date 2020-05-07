@@ -2,8 +2,7 @@
 > See https://github.com/Microsoft/BotBuilder-Samples/tree/master/experimental/language-generation to learn more
 
 > You can now add reference to other .lg files.
-> This is imported for 'WelcomeActions()' template
-[Root LG](../RootDialog/RootDialog.lg)
+[Common](../Common/Common.lg)
 
 # HelpAddItem
 - ${HelpPrefix()}, you can simply say an item to add it to a list. You can pick from one of the list types supported - todo/ grocery/ shopping
@@ -38,12 +37,9 @@
     SuggestedActions = Todo | Grocery | Shopping
 ]
 
-# GetListType.DefaultValueResponse
-- Sorry, I'm having a hard time understanding you inspite of trying ${this.turnCount} times. For now, I'm going with '${class.defaultValue}' as the list type.
-
 # AddItemReadBack
 [Activity
-    Text = ${HelpPrefix()}, I have added "${dialog.itemTitle}" to your ${dialog.listType} list. You have ${count(user.lists[dialog.listType])} items in your ${dialog.listType} list.
+    Text = ${HelpPrefix()}, I have added "**${dialog.itemTitle}**" to your **${dialog.listType}** list. You have **${count(user.lists[dialog.listType])}** items in your ${dialog.listType} list.
     ${WelcomeActions()}
 ]
 

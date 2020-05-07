@@ -1,33 +1,46 @@
-﻿[import](common.lg)
+﻿# AskFirstName
+[Activity
+    Text = What is your first name?
+    SuggestedActions = Why? | No name | Cancel
+]
 
-# GetUserName
-- Hi, what is your name? You can  \n - state your name \n - say things like 'my name is <your name>' \n - ask 'why do you need my name' \n - say 'I'm not going to give you my name'. 
+# AskFirstName.Invalid()
+- Sorry '${this.value}' does not work. I'm looking for a value between 3-50 characters. ${AskFirstName()}
 
-# UserNameAck
-- Thanks. I have ${user.name} as your name and ${user.age} as your age.
+# AskUserAage
+[Activity
+    Text = ${AckPhrase()} ${user.profile.name}, ${GetAge()}
+    SuggestedActions = Why? | No age | Cancel
+]
 
-# AskUserAge.prompt
-- Hello ${user.name}, how old are you?
+# AskUserAge.Invalid
+- Sorry '${this.value}' does not work. I'm looking for a value between 1-150. ${GetAge()}
 
-# AskUserAge.Invalid.Prompt
-- Sorry ${this.value} does not work. I'm expecting a value between 1-150. What is your age?
+# AskUserAge.Unrecognized
+- Sorry, I do not understand '${turn.activity.text}'. ${GetAge()}
 
-# AskUserAge.Default.Prompt
-- Sorry, this is not working :(. For now, I'm going to set your age to 30.
+# GetAge
+- What is your age?
 
-# CancelUserProfile
-- Sure, cancelling user profile...
+# AckPhrase
+- Hello
+- Hi
+- Hiya
 
-# WhyName
-- I need your name to address you correctly! \n You can say things like 'My name is <your name>' to introduce yourself to me.
+# ProfileReadBack
+- ${AckPhrase()} ${user.profile.name}, I have your age as ${user.profile.age}
 
-# WhyAge
-- I just like to know your age .. no good reason! \n Try saying "I'm <your age> years old"
+# GetProfileHelp
+- Local help for get profile. Just for demo.
 
-# NoName
-- No worries. I'm going to set your name to 'Human'. \n You can say "My name is <your name>" to re-introduce yourself to me.
+# WhyJustificationReadBack
+- IF: ${user.profile.name == null}
+    - I need your name to be able to address you correctly. See http://contoso.com/privacy to learn more.
+- ELSE:
+    - I need your age to provide relevant product recommendations. See http://contoso.com/privacy to learn more.
 
-# NoAge
-- No worries. I'm just going to assume you are 30!
+# NoValueForUserNameReadBack
+- No worries. I will set your name as 'Human' for now. You can always say "My name is <your name>" to re-introduce yourself to me.
 
-
+# NoValueForUserAgeReadBack
+- No issues. I will set your age as '30' for now. You can always say "I'm <your age> years old" to update your age.

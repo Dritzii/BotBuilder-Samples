@@ -10,12 +10,16 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Bot.Builder.AI.Luis;
+using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 
 namespace Microsoft.BotBuilderSamples
 {
     public class DeleteToDoDialog : ComponentDialog
     {
-        public DeleteToDoDialog()
+        public DeleteToDoDialog(IConfiguration configuration)
             : base(nameof(DeleteToDoDialog))
         {
             string[] paths = { ".", "Dialogs", "DeleteToDoDialog", "DeleteToDoDialog.lg" };
@@ -24,6 +28,7 @@ namespace Microsoft.BotBuilderSamples
             var DeleteToDoDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
                 Generator = new TemplateEngineLanguageGenerator(Templates.ParseFile(fullPath)),
+                Recognizer = CreateLuisRecognizer(configuration),
                 Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog() 
@@ -35,65 +40,107 @@ namespace Microsoft.BotBuilderSamples
                             {
                                 // All conditions are expressed using the common expression language.
                                 // See https://github.com/Microsoft/BotBuilder-Samples/tree/master/experimental/common-expression-language to learn more
-                                Condition = "user.todos == null || count(user.todos) <= 0",
+                                Condition = "count(user.lists.todo) == 0 && count(user.lists.grocery) == 0 && count(user.lists.shopping) == 0",
                                 Actions = new List<Dialog>()
                                 {
                                     new SendActivity("${DeleteEmptyList()}"),
-                                    new SendActivity("${WelcomeActions()}"),
                                     new EndDialog()
                                 }
                             },
-                            // User could have already specified the todo to delete via 
-                            // todoTitle as simple machine learned LUIS entity or
-                            // todoTitle_patternAny as pattern.any LUIS entity .or.
-                            // prebuilt number entity that denotes the position of the todo item in the list .or.
-                            // todoIdx machine learned entity that can detect things like first or last etc. 
 
-                            // As a demonstration for this example, use a code step to understand entities returned by LUIS.
-                            // You could have easily replaced the code step with these two steps
-                            // new SaveEntity("@todoTitle[0]", "turn.todoTitle"),
-                            // new SaveEntity("@todoTitle_patternAny[0]", "turn.todoTitle"),
-
-                            new CodeAction(GetToDoTitleToDelete),
-                            new IfCondition()
+                            // User could have specified the item and/ or list type to delete.
+                            new SetProperties()
                             {
-                                Condition = "turn.todoTitle == null",
-                                Actions = new List<Dialog>()
+                                Assignments = new List<PropertyAssignment>()
                                 {
-                                    // First show the current list of Todos
-                                    new BeginDialog(nameof(ViewToDoDialog)),
-                                    new TextInput()
+                                    new PropertyAssignment()
                                     {
-                                        Property = "turn.todoTitle",
-                                        Prompt = new ActivityTemplate("${GetToDoTitleToDelete()}"),
-                                        // Allow interruptions enable interruptions while the user is in the middle of this prompt
-                                        // The value to allow interruptions is an expression so you can examine any property to decide if 
-                                        // interruptions are allowed or not. In this sample, we are not allowing interruptions 
-                                        AllowInterruptions = false
+                                        Property = "dialog.itemTitle",
+                                        Value = "=@itemTitle"
+                                    },
+                                    new PropertyAssignment()
+                                    {
+                                        Property = "dialog.listType",
+                                        Value = "=@listType"
                                     }
                                 }
                             },
+
+                            // Ask for list type first.
+                            new TextInput()
+                            {
+                                Property = "dialog.listType",
+                                Prompt = new ActivityTemplate("${GetListType()}"),
+                                Value = "=@listType",
+                                AllowInterruptions = "!@listType && turn.recognized.score >= 0.7",
+                                Validations = new List<BoolExpression>()
+                                {
+                                    // Verify using expressions that the value is one of todo or shopping or grocery
+                                    "contains(createArray('todo', 'shopping', 'grocery'), toLower(this.value))",
+                                },
+                                OutputFormat = "=toLower(this.value)",
+                                InvalidPrompt = new ActivityTemplate("${GetListType.Invalid()}"),
+                                MaxTurnCount = 2,
+                                DefaultValue = "todo",
+                                DefaultValueResponse = new ActivityTemplate("${GetListType.DefaultValueResponse()}")
+                            },
+
                             new IfCondition()
                             {
-                                Condition = "contains(user.todos, turn.todoTitle) == false",
+                                Condition = "count(user.lists[dialog.listType]) == 0",
                                 Actions = new List<Dialog>()
                                 {
-                                    new SendActivity("${TodoNotFound()}"),
-                                    new DeleteProperty()
-                                    {
-                                        Property = "turn.todoTitle"
-                                    },
-                                    new RepeatDialog()
+                                    new SendActivity("${NoItemsInList()}"),
+                                    new EndDialog()
                                 }
                             },
+
+                            // Ask for title to delete
+                            new ChoiceInput()
+                            {
+                                Choices = "user.lists[dialog.listType]",
+                                Property = "dialog.itemTitle",
+                                OutputFormat = ChoiceOutputFormat.Value,
+                                Style = ListStyle.List,
+                                Prompt = new ActivityTemplate("${GetItemTitleToDelete()}")
+                            },
+
+                            // remove item
                             new EditArray()
                             {
-                                ItemsProperty = "user.todos",
-                                Value = "=turn.todoTitle",
+                                ItemsProperty = "user.lists[dialog.listType]",
+                                Value = "=dialog.itemTitle",
                                 ChangeType = EditArray.ArrayChangeType.Remove
                             },
-                            new SendActivity("${DeleteReadBack()}"),
-                            new EndDialog()
+
+                            new SendActivity("${DeleteConfirmationReadBack()}")
+                        }
+                    },
+                    // Shows how to use dialog event to capture intent recognition event for more than one intent.
+                    // Alternate to this would be to add two separate OnIntent events.
+                    // This ensures we set any entities recognized by these two intents.
+                    new OnDialogEvent()
+                    {
+                        Event = AdaptiveEvents.RecognizedIntent,
+                        Condition = "#GetTitleToDelete || #GetListType",
+                        Actions = new List<Dialog>()
+                        {
+                            new SetProperties()
+                            {
+                                Assignments = new List<PropertyAssignment>()
+                                {
+                                    new PropertyAssignment()
+                                    {
+                                        Property = "dialog.itemTitle",
+                                        Value = "=@itemTitle"
+                                    },
+                                    new PropertyAssignment()
+                                    {
+                                        Property = "dialog.listType",
+                                        Value = "=@listType"
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -127,6 +174,20 @@ namespace Microsoft.BotBuilderSamples
                 dc.State.SetValue("turn.todoTitle", todoTitleStr);
             }
             return await dc.EndDialogAsync(options);
+        }
+
+        private static Recognizer CreateLuisRecognizer(IConfiguration Configuration)
+        {
+            if (string.IsNullOrEmpty(Configuration["luis:DeleteToDoDialog_en_us_lu"]) || string.IsNullOrEmpty(Configuration["LuisAPIKey"]) || string.IsNullOrEmpty(Configuration["LuisAPIHostName"]))
+            {
+                throw new Exception("Your AddToDoDialog's LUIS application is not configured for AddToDoDialog. Please see README.MD to set up a LUIS application.");
+            }
+            return new LuisAdaptiveRecognizer()
+            {
+                Endpoint = Configuration["LuisAPIHostName"],
+                EndpointKey = Configuration["LuisAPIKey"],
+                ApplicationId = Configuration["luis:DeleteToDoDialog_en_us_lu"]
+            };
         }
     }
 }

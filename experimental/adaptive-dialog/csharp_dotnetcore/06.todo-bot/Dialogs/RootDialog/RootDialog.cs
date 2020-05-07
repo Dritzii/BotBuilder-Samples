@@ -138,8 +138,9 @@ namespace Microsoft.BotBuilderSamples
 
             // Add all child dialogS
             AddDialog(new AddToDoDialog(configuration));
-            AddDialog(new DeleteToDoDialog());
-            AddDialog(new ViewToDoDialog());
+            AddDialog(new DeleteToDoDialog(configuration));
+            AddDialog(new ViewToDoDialog(configuration));
+            AddDialog(new GetUserProfileDialog(configuration));
 
             // The initial child Dialog to run.
             InitialDialogId = nameof(AdaptiveDialog);
