@@ -21,6 +21,8 @@ namespace Microsoft.BotBuilderSamples
     {
         private IStatePropertyAccessor<JObject> _userStateAccessor;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1118:Parameter should not span multiple lines", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1404:Code analysis suppression should have justification", Justification = "<Pending>")]
         public RootDialog(UserState userState, ResourceExplorer resourceExplorer)
             : base("root")
         {
@@ -58,18 +60,24 @@ namespace Microsoft.BotBuilderSamples
             AddDialog(new SlotFillingDialog("slot-dialog", slots));
 
             // Defines a simple two step Waterfall to test the slot dialog.
-            AddDialog(new WaterfallDialog("waterfall", new WaterfallStep[] {
-                StartDialogAsync,
-                DoComposerDialogAsync,
-                DoSlotDialogAsync,
-                ProcessResultsAsync }));
+            AddDialog(new WaterfallDialog(
+                "waterfall", 
+                new WaterfallStep[]
+                {
+                    StartDialogAsync,
+                    DoComposerDialogAsync,
+                    DoSlotDialogAsync,
+                    ProcessResultsAsync 
+                }));
 
             // Load and add adaptive dialog produced by composer.
             // Name of the dialog (.dialog file name) to find
-            var dialogResource = resourceExplorer.GetResource("Main.dialog");
+            var dialogResource = resourceExplorer.GetResource("testluisintegration.dialog");
             var composerDialog = resourceExplorer.LoadType<AdaptiveDialog>(dialogResource);
+            
             // give the dialog an ID, this defaults to the filename if missing.
-            composerDialog.Id = "adaptive-main";
+            //composerDialog.Id = "adaptive-main";
+
             // Add the dialog
             AddDialog(composerDialog);
 
@@ -104,12 +112,18 @@ namespace Microsoft.BotBuilderSamples
         private async Task<DialogTurnResult> DoComposerDialogAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             object adaptiveOptions = null;
+            
             // pass prior custom dialog result as option into adaptive dialog.
             if (stepContext.Result is IDictionary<string, object> result && result.Count > 0)
             {
                 adaptiveOptions = new { fullname = result };
             }
-            return await stepContext.BeginDialogAsync("adaptive-main", adaptiveOptions, cancellationToken);
+
+            // Set this to indicate to the adaptive dialog that the current activity has already been processed. 
+            // Without this, the child adaptive dialog will re-process the current activity.
+            stepContext.State.SetValue("turn.activityProcessed", true);
+
+            return await stepContext.BeginDialogAsync("testluisintegration.dialog", adaptiveOptions, cancellationToken);
         }
 
         private async Task<DialogTurnResult> DoSlotDialogAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -125,6 +139,7 @@ namespace Microsoft.BotBuilderSamples
                         { "userage", $"{result["userage"]}" },
                     };
             }
+
             return await stepContext.BeginDialogAsync("slot-dialog", null, cancellationToken);
         }
 

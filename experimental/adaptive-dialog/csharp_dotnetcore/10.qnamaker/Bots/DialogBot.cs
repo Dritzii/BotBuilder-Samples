@@ -5,9 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.BotBuilderSamples
@@ -20,21 +17,23 @@ namespace Microsoft.BotBuilderSamples
     public class DialogBot<T> : ActivityHandler 
         where T : Dialog
     {
-        private readonly ILogger logger;
-        private readonly DialogManager dialogManager;
+        private readonly Dialog _dialog;
+        private readonly ILogger _logger;
+        private DialogManager _dialogManager;
 
-        public DialogBot(ResourceExplorer resourceExplorer, T dialog, ILogger<DialogBot<T>> logger)
+        public DialogBot(ConversationState conversationState, UserState userState, T dialog, ILogger<DialogBot<T>> logger)
         {
-            this.logger = logger;
-            this.dialogManager = new DialogManager(dialog);
-            this.dialogManager.UseResourceExplorer(resourceExplorer);
-            this.dialogManager.UseLanguageGeneration();
+            _dialog = dialog;
+            _logger = logger;
+            _dialogManager = new DialogManager(_dialog);
+            _dialogManager.ConversationState = conversationState;
+            _dialogManager.UserState = userState;
         }
 
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            this.logger.LogInformation("Running dialog with OnTurn");
-            await this.dialogManager.OnTurnAsync(turnContext, cancellationToken);
+            _logger.LogInformation("Running dialog with Activity.");
+            await _dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
     }
 }

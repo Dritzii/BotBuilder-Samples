@@ -5,9 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.BotBuilderSamples
@@ -17,24 +14,24 @@ namespace Microsoft.BotBuilderSamples
     // each with dependency on distinct IBot types, this way ASP Dependency Injection can glue everything together without ambiguity.
     // The ConversationState is used by the Dialog system. The UserState isn't, however, it might have been used in a Dialog implementation,
     // and the requirement is that all BotState objects are saved at the end of a turn.
-    public class DialogBot<T> : ActivityHandler 
+    public class InterruptionsBot<T> : ActivityHandler 
         where T : Dialog
     {
         private readonly ILogger logger;
-        private readonly DialogManager dialogManager;
+        private DialogManager dialogManager;
 
-        public DialogBot(ResourceExplorer resourceExplorer, T dialog, ILogger<DialogBot<T>> logger)
+        public InterruptionsBot(ConversationState conversationState, UserState userState, T dialog, ILogger<InterruptionsBot<T>> logger)
         {
             this.logger = logger;
-            this.dialogManager = new DialogManager(dialog);
-            this.dialogManager.UseResourceExplorer(resourceExplorer);
-            this.dialogManager.UseLanguageGeneration();
+            dialogManager = new DialogManager(dialog);
+            dialogManager.ConversationState = conversationState;
+            dialogManager.UserState = userState;
         }
 
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            this.logger.LogInformation("Running dialog with OnTurn");
-            await this.dialogManager.OnTurnAsync(turnContext, cancellationToken);
+            this.logger.LogInformation("Running dialog with Activity.");
+            await dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
     }
 }

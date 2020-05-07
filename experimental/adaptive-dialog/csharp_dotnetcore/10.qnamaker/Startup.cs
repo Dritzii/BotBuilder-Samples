@@ -3,52 +3,49 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.AI.Luis;
+using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.BotBuilderSamples
 {
     public class Startup
     {
-        public Startup(IWebHostEnvironment env, IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
+            this.Configuration = configuration;
             this.HostingEnvironment = env;
         }
 
-        private IWebHostEnvironment HostingEnvironment { get; set; }
+        private IConfiguration Configuration { get; set; }
+
+        private IHostingEnvironment HostingEnvironment { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers().AddNewtonsoftJson();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            // Required for memory paths introduced by adaptive dialogs.
             ComponentRegistration.Add(new DialogsComponentRegistration());
-
-            // Register declarative components
-            ComponentRegistration.Add(new DeclarativeComponentRegistration());
-
-            // Register adapive dialog components
             ComponentRegistration.Add(new AdaptiveComponentRegistration());
-
-            // Add Language generation
             ComponentRegistration.Add(new LanguageGenerationComponentRegistration());
+            ComponentRegistration.Add(new QnAMakerComponentRegistration());
+            
+            // Create the credential provider to be used with the Bot Framework Adapter.
+            services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
 
-            // Add LUIS component
-            ComponentRegistration.Add(new LuisComponentRegistration());
-
-            // Create the Bot Framework Adapter with error handling enabled.
+            // Create the Bot Framework Adapter with error handling enabled. 
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
-            // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
+            // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.) 
             services.AddSingleton<IStorage, MemoryStorage>();
 
             // Create the User state. (Used in this bot's Dialog implementation.)
@@ -60,16 +57,15 @@ namespace Microsoft.BotBuilderSamples
             // The Dialog that will be run by the bot.
             services.AddSingleton<RootDialog>();
 
-            // Resource explorer to manage declarative resources for adaptive dialog
-            var resourceExplorer = new ResourceExplorer().LoadProject(this.HostingEnvironment.ContentRootPath);
-            services.AddSingleton(resourceExplorer);
-
-            // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
+            // Create the bot. the ASP Controller is expecting an IBot.
             services.AddSingleton<IBot, DialogBot<RootDialog>>();
+
+            // Add this so memory scopes are populated correctly
+            services.AddSingleton<IConfiguration>(this.Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -78,6 +74,7 @@ namespace Microsoft.BotBuilderSamples
 
             app.UseDefaultFiles()
                 .UseStaticFiles()
+                .UseWebSockets()
                 .UseRouting()
                 .UseAuthorization()
                 .UseEndpoints(endpoints =>
@@ -85,7 +82,8 @@ namespace Microsoft.BotBuilderSamples
                     endpoints.MapControllers();
                 });
 
-            // app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
+            //app.UseMvc();
         }
     }
 }
