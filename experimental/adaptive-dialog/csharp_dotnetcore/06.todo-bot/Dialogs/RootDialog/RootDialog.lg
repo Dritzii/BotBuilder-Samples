@@ -4,14 +4,14 @@
 > Structured template with composition
 # HelpRootDialog
 [Activity
-    Text = ${WelcomePrefix()}, I'm the Todo sample bot. ${WelcomeSuffix()}
+    Text = ${WelcomePrefix()}, I'm the sample bot. ${WelcomeSuffix()}
     ${WelcomeActions()}
 ]
 
 > Structured template
 # WelcomeActions
 [Activity
-    SuggestedActions = Add todo | View Todo | Remove Todo | Cancel | Help
+    SuggestedActions = Add item | View lists | Remove item | Profile | Cancel | Help
 ]
 
 # WelcomeSuffix
@@ -26,7 +26,7 @@
 > Structured template with composition
 # IntroMessage
 [Activity
-    Text = Hi, nice to meet you! I'm the todo bot. Here are some things I can help with
+    Text = Hi, nice to meet you! I'm a sample bot. Here are some things I can help with
     ${WelcomeActions()}
 ]
 

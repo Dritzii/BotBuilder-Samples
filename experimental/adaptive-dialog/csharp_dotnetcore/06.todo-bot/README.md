@@ -60,15 +60,17 @@ This sample uses preview packages available on the [BotBuilder MyGet feed][4].
 ```bash
 > npm i -g luis-apis @microsoft/botframework-cli
 ```
-- In a command prompt, navigate to `botbuilder-samples/experimental/adaptive-dialog/csharp_dotnetcore/todo-bot`
-- To cross-train all LUIS applications for this bot
-```bash
-> bf luis:cross-train --in dialogs --out generated --config Dialogs/DialogLuHierarchy.config.json
+- In a command prompt, navigate to `botbuilder-samples/experimental/adaptive-dialog/csharp_dotnetcore/06.todo-bot/Dialogs
+> cd 06.todo-bot/Dialogs
+> bf luis:cross-train --in . --out generated --config DialogLuHierarchy.config.json
 ```
+- Get your [LUIS authoring key](https://docs.microsoft.com/en-us/azure/cognitive-services/LUIS/luis-concept-keys)
 - To create, train and pubish LUIS applications for this bot
 ```bash
-> bf luis:build --in generated --out generated --authoringKey <Your LUIS Authoring key>
+> bf luis:build --in ..\generated --out ..\generated --log --botName TodoBotWithLuis --authoringKey <Your LUIS Authoring key> 
 ```
+- This command writes out a bunch of .dialog files (which are useful if you are using declarative form of adaptive dialogs) as well as luis.settings.\<youralias>.\<region>.json file. 
+- Add the application IDs for the created applications from luis.settings.\<youralias>.\<region>.json to appsettings.
 
 [1]:../../README.md
 [2]:../../language-generation/README.md

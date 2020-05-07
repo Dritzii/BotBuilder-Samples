@@ -1,40 +1,51 @@
 ﻿> Language Generation definition file. 
 > See https://github.com/Microsoft/BotBuilder-Samples/tree/master/experimental/language-generation to learn more
 
-
 > You can now add reference to other .lg files.
+> This is imported for 'WelcomeActions()' template
 [Root LG](../RootDialog/RootDialog.lg)
 
 # HelpAddItem
-- ${HelpPrefix()}, you can simply say the title of your todo to add it. You can pick from one of the list types supported - todo/ grocery/ shopping
+- ${HelpPrefix()}, you can simply say an item to add it to a list. You can pick from one of the list types supported - todo/ grocery/ shopping
 
 # HelpPrefix
 - Sure
 - You bet
 - Absolutely
 
-# ConfirmCancellation
-- Are you suare you want to cancel? 
-- Just double checking; you want to cancel this right? 
+# AskForItemTitle
+- IF : ${dialog.listType != null}
+    - Ok, what would you like to add to your ${dialog.listType} list?
+- ELSE :
+    - Ok, what is the item title?
 
 > Structured template
 # GetItemTitle
 [Activity
-    Text = Ok, what is the title of your todo?
+    Text = ${AskForItemTitle()}
     SuggestedActions = Help | Cancel
 ]
 
 # GetListType
-- Which list would you add ${dialog.itemTitle} to?
+[Activity
+    Text = Which list would you add '${dialog.itemTitle}' to?
+    SuggestedActions = Todo | Grocery | Shopping
+]
+
+# GetListType.Invalid
+[Activity
+    Text = Sorry, '${this.value}' does not work. Which list would you add ${dialog.itemTitle} to?
+    SuggestedActions = Todo | Grocery | Shopping
+]
+
+# GetListType.DefaultValueResponse
+- Sorry, I'm having a hard time understanding you inspite of trying ${this.turnCount} times. For now, I'm going with '${class.defaultValue}' as the list type.
 
 # AddItemReadBack
 [Activity
-    Text = ${HelpPrefix()}, I have added "${turn.todoTitle}" to your todo list. You have ${count(user.todos)} items in your Todo list.
+    Text = ${HelpPrefix()}, I have added "${dialog.itemTitle}" to your ${dialog.listType} list. You have ${count(user.lists[dialog.listType])} items in your ${dialog.listType} list.
     ${WelcomeActions()}
 ]
 
-# CancelAddTodo
-[Activity
-    Text = ${HelpPrefix()}, I've cancelled that.
-    ${WelcomeActions()}
-]
+# ItemTitleReadBack
+- Ok. I have '${dialog.itemTitle}' as the title.

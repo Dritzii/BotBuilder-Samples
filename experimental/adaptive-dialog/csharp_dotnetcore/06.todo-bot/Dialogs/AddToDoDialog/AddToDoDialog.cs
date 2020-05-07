@@ -15,6 +15,7 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Extensions.Configuration;
 using System;
+using AdaptiveExpressions.Properties;
 
 namespace Microsoft.BotBuilderSamples
 {
@@ -67,28 +68,31 @@ namespace Microsoft.BotBuilderSamples
                             // TextInput by default will skip the prompt if the property has value.
                             new TextInput()
                             {
-                                Property = "dialog.todoTitle",
+                                Property = "dialog.itemTitle",
                                 Prompt = new ActivityTemplate("${GetItemTitle()}"),
                                 // This entity is coming from the local AddToDoDialog's own LUIS recognizer.
                                 // This dialog's .lu file is under \AddToDoDialog\AddToDoDialog.lu
                                 Value = "=@itemTitle",
                                 // Allow interruption if we do not have an item title and have a super high confidence classification of an intent.
-                                AllowInterruptions = "!@itemTitle && #Score >= 0.9"
+                                AllowInterruptions = "!@itemTitle && turn.recognized.score >= 0.7"
                             },
                             // Get list type
-                            new ChoiceInput()
+                            new TextInput()
                             {
                                 Property = "dialog.listType",
                                 Prompt = new ActivityTemplate("${GetListType()}"),
-                                Choices = new ChoiceSet(new List<Choice>()
-                                {
-                                    new Choice("Todo"),
-                                    new Choice("Shopping"),
-                                    new Choice("Grocery")
-                                }),
                                 Value = "=@listType",
-                                AllowInterruptions = "!@listType && #Score >= 0.8",
-                                OutputFormat = "=toLower(this.value)"
+                                AllowInterruptions = "!@listType && turn.recognized.score >= 0.7",
+                                Validations = new List<BoolExpression>()
+                                {
+                                    // Verify using expressions that the value is one of todo or shopping or grocery
+                                    "contains(createArray('todo', 'shopping', 'grocery'), toLower(this.value))",
+                                },
+                                OutputFormat = "=toLower(this.value)",
+                                InvalidPrompt = new ActivityTemplate("${GetListType.Invalid()}"),
+                                MaxTurnCount = 2,
+                                DefaultValue = "todo",
+                                DefaultValueResponse = new ActivityTemplate("${GetListType.DefaultValueResponse()}")
                             },
                             // Add the new todo title to the list of todos. Keep the list of todos in the user scope.
                             new EditArray()
@@ -103,7 +107,7 @@ namespace Microsoft.BotBuilderSamples
                             // AutoEndDialog property on the Adaptive Dialog to 'false'
                         }
                     },
-                    // Handle local help
+                    // Although root dialog can handle this, this will match loacally because this dialog's .lu has local definition for this intent. 
                     new OnIntent("Help")
                     {
                         Actions = new List<Dialog>()
@@ -123,15 +127,15 @@ namespace Microsoft.BotBuilderSamples
 
         private static Recognizer CreateLuisRecognizer()
         {
-            if (string.IsNullOrEmpty(Configuration["LuisAppId"]) || string.IsNullOrEmpty(Configuration["LuisAPIKey"]) || string.IsNullOrEmpty(Configuration["LuisAPIHostName"]))
+            if (string.IsNullOrEmpty(Configuration["luis:AddToDoDialog_en_us_lu"]) || string.IsNullOrEmpty(Configuration["LuisAPIKey"]) || string.IsNullOrEmpty(Configuration["LuisAPIHostName"]))
             {
-                throw new Exception("Your LUIS application is not configured for AddToDoDialog. Please see README.MD to set up a LUIS application.");
+                throw new Exception("Your AddToDoDialog's LUIS application is not configured for AddToDoDialog. Please see README.MD to set up a LUIS application.");
             }
             return new LuisAdaptiveRecognizer()
             {
                 Endpoint = Configuration["LuisAPIHostName"],
                 EndpointKey = Configuration["LuisAPIKey"],
-                ApplicationId = Configuration["LuisAppId-AddToDoDialog"]
+                ApplicationId = Configuration["luis:AddToDoDialog_en_us_lu"]
             };
         }
     }

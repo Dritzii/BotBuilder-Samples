@@ -123,7 +123,8 @@ namespace Microsoft.BotBuilderSamples
                                 },
                                 ElseActions = new List<Dialog>()
                                 {
-                                    new SendActivity("${CancelCancelled()}")
+                                    new SendActivity("${CancelCancelled()}"),
+                                    new SendActivity("${WelcomeActions()}")
                                 }
                             }
                             
@@ -177,15 +178,15 @@ namespace Microsoft.BotBuilderSamples
 
         public static Recognizer CreateRecognizer()
         {
-            if (string.IsNullOrEmpty(Configuration["LuisAppId"]) || string.IsNullOrEmpty(Configuration["LuisAPIKey"]) || string.IsNullOrEmpty(Configuration["LuisAPIHostName"]))
+            if (string.IsNullOrEmpty(Configuration["luis:RootDialog_en_us_lu"]) || string.IsNullOrEmpty(Configuration["LuisAPIKey"]) || string.IsNullOrEmpty(Configuration["LuisAPIHostName"]))
             {
-                throw new Exception("Your LUIS application is not configured. Please see README.MD to set up a LUIS application.");
+                throw new Exception("Your RootDialog LUIS application is not configured. Please see README.MD to set up a LUIS application.");
             }
             return new LuisAdaptiveRecognizer()
             {
                 Endpoint = Configuration["LuisAPIHostName"],
                 EndpointKey = Configuration["LuisAPIKey"],
-                ApplicationId = Configuration["LuisAppId"]
+                ApplicationId = Configuration["luis:RootDialog_en_us_lu"]
             };
         }
     }
