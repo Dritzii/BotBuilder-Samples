@@ -72,11 +72,8 @@ namespace Microsoft.BotBuilderSamples
 
             // Load and add adaptive dialog produced by composer.
             // Name of the dialog (.dialog file name) to find
-            var dialogResource = resourceExplorer.GetResource("testluisintegration.dialog");
+            var dialogResource = resourceExplorer.GetResource("<yourComposerBotName>.dialog");
             var composerDialog = resourceExplorer.LoadType<AdaptiveDialog>(dialogResource);
-            
-            // give the dialog an ID, this defaults to the filename if missing.
-            //composerDialog.Id = "adaptive-main";
 
             // Add the dialog
             AddDialog(composerDialog);
@@ -123,7 +120,7 @@ namespace Microsoft.BotBuilderSamples
             // Without this, the child adaptive dialog will re-process the current activity.
             stepContext.State.SetValue("turn.activityProcessed", true);
 
-            return await stepContext.BeginDialogAsync("testluisintegration.dialog", adaptiveOptions, cancellationToken);
+            return await stepContext.BeginDialogAsync("<yourComposerBotName>.dialog", adaptiveOptions, cancellationToken);
         }
 
         private async Task<DialogTurnResult> DoSlotDialogAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
