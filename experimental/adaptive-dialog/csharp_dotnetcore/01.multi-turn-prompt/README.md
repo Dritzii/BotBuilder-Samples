@@ -1,8 +1,6 @@
 ﻿# multi-turn prompt
 
-This sample demonstrates using [Adaptive dialog][1] and [Language Generation][2] PREVIEW features to achieve the same functionality that the waterfall based cards sample [here][3].
-
-This sample uses preview packages available on the [BotBuilder MyGet feed][4].
+This sample demonstrates using [Adaptive dialog][1] and [Language Generation][2] features to achieve the same functionality that the waterfall based cards sample [here][3].
 
 This bot has been created using [Bot Framework](https://dev.botframework.com), it shows how to use the prompts classes included in `botbuilder-dialogs`.  This bot will ask for the user's name and age, then store the responses. It demonstrates a multi-turn dialog flow using a text prompt, a number prompt, and state accessors to store and retrieve values.
 
@@ -57,8 +55,8 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 - File -> Open Bot
 - Enter a Bot URL of `http://localhost:3978/api/messages`
 
-[1]:../README.md
-[2]:../language-generation/README.md
+[1]:https://aka.ms/adaptive-dialogs
+[2]:https://aka.ms/language-generation
 [3]:../../../samples/csharp_dotnetcore/05.multi-turn-prompt
 [4]:https://botbuilder.myget.org/gallery/botbuilder-declarative
 [extension]:https://marketplace.visualstudio.com/items?itemName=tomlm.vscode-dialog-debugger

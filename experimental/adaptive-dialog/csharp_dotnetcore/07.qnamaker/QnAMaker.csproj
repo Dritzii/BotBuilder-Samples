@@ -2,8 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <LangVersion>latest</LangVersion>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <NoWarn>;NU5125;SA0001;1701;1702;1705</NoWarn>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App">
+      <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
+      <Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
+    </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.1" />
@@ -11,20 +23,10 @@
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Adaptive" Version="4.9.0-rc4" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.9.0-rc4" />
     <PackageReference Include="Microsoft.Bot.Builder.LanguageGeneration" Version="4.9.0-rc4" />
-    <PackageReference Include="Microsoft.Bot.Builder.AI.Luis" Version="4.9.0-rc4" />
+    <PackageReference Include="Microsoft.Bot.Builder.AI.QnA" Version="4.9.0-rc4" />
     <PackageReference Include="AdaptiveExpressions" Version="4.9.0-rc4" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Debugging" Version="4.9.0-rc4" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="nuget.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Version="4.9.0-rc4" />
   </ItemGroup>
 
 </Project>

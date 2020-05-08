@@ -1,7 +1,5 @@
 # CoreBot
-This sample demonstrates using [Adaptive dialog][51] and [Language Generation][52] PREVIEW features to achieve the same functionality that the waterfall based core bot sample [here][53].
-
-This sample uses preview packages available on the [BotBuilder MyGet feed][54].
+This sample demonstrates using [Adaptive dialog][51] and [Language Generation][52] features to achieve the same functionality that the waterfall based core bot sample [here][53].
 
 This bot has been created using [Bot Framework][1], it shows how to:
 - Use **[Language Generation][41]** to power bot's responses
@@ -63,7 +61,7 @@ This bot has been created using [Bot Framework][1], it shows how to:
 
 ## LUIS Setup
 ### Using LUIS portal
-- Navigate and sign in to [preview.luis.ai][11]
+- Navigate and sign in to [luis.ai][11]
 - Under "My apps", click on "Import new app"
 - Click on "Choose app file (JSON format) ..."
 - Select `botbuilder-samples/experimental/adaptive-dialog/csharp_dotnetcore/04.core-bot/Dialogs/RootDialog.lu.json
@@ -103,7 +101,7 @@ This bot has been created using [Bot Framework][1], it shows how to:
 [6]: https://github.com/Microsoft/BotFramework-Emulator/releases
 [9]: https://docs.microsoft.com/en-us/azure/cognitive-services/luis/luis-how-to-account-settings
 [10]: https://docs.microsoft.com/en-us/azure/cognitive-services/luis/luis-reference-regions
-[11]: https://preview.luis.ai
+[11]: https://luis.ai
 [20]: https://docs.botframework.com
 [21]: https://docs.microsoft.com/azure/bot-service/bot-service-overview-introduction?view=azure-bot-service-4.0
 [22]: https://docs.microsoft.com/azure/bot-service/?view=azure-bot-service-4.0
@@ -118,8 +116,8 @@ This bot has been created using [Bot Framework][1], it shows how to:
 [40]: https://aka.ms/azuredeployment
 [41]: ../../README.md
 
-[51]:../README.md
-[52]:../language-generation/README.md
+[51]:https://aka.ms/adaptive-dialogs
+[52]:https://aka.ms/language-generation
 [53]:../../../samples/csharp_dotnetcore/13.core-bot
 [54]:https://botbuilder.myget.org/gallery/botbuilder-declarative
 

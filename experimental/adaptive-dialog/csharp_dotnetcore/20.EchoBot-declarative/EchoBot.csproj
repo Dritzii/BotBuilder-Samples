@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>49ea05d8-7d3d-4e4f-a331-db17dd490dcb</UserSecretsId>
+    <RootNamespace>Microsoft.BotBuilderSamples</RootNamespace>
+    <AssemblyName>AdaptiveBot</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,6 +14,8 @@
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Adaptive" Version="4.9.0-rc4" />
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Debugging" Version="4.9.0-rc4" />
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Version="4.9.0-rc4" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.9.0-rc4" />
     <PackageReference Include="Microsoft.Bot.Builder.LanguageGeneration" Version="4.9.0-rc4" />
   </ItemGroup>
@@ -26,7 +31,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="appsettings.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="nuget.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -34,4 +39,5 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
+
 </Project>

@@ -1,6 +1,4 @@
-﻿This sample demonstrates using [Adaptive dialog][1] and [Language Generation][2] PREVIEW features to achieve the same functionality that the waterfall based cards sample [here][3].
-
-This sample uses preview packages available on the [BotBuilder MyGet feed][4].
+﻿This sample demonstrates using [Adaptive dialog][1] and [Language Generation][2] features to achieve the same functionality that the waterfall based cards sample [here][3].
 
 ## Prerequisites
 
@@ -60,8 +58,8 @@ This sample uses preview packages available on the [BotBuilder MyGet feed][4].
 - [Rich cards](https://docs.microsoft.com/azure/bot-service/bot-builder-howto-add-media-attachments?view=azure-bot-service-4.0&tabs=csharp#send-a-hero-card)
 
 [41]: ../../README.md
-[1]:../README.md
-[2]:../language-generation/README.md
+[1]:https://aka.ms/adaptive-dialogs
+[2]:https://aka.ms/language-generation
 [3]:../../../samples/csharp_dotnetcore/06.using-cards
 [4]:https://botbuilder.myget.org/gallery/botbuilder-declarative
 [extension]:https://marketplace.visualstudio.com/items?itemName=tomlm.vscode-dialog-debugger
