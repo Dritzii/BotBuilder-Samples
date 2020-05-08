@@ -1,7 +1,7 @@
 {
-    "name": "adaptivebot",
+    "name": "using-cards",
     "version": "1.0.0",
-    "description": "Bot Builder v4 echo bot sample",
+    "description": "Bot Builder v4 using cards sample",
     "author": "Microsoft",
     "license": "MIT",
     "main": "index.js",
@@ -13,17 +13,17 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com"
+        "url": "https://github.com/Microsoft/BotBuilder-Samples.git"
     },
     "dependencies": {
-        "botbuilder": "4.9.0-preview-128235",
-        "botbuilder-dialogs-declarative": "4.9.0-preview-128235",
-        "botbuilder-dialogs-adaptive": "4.9.0-preview-128235",
-        "botbuilder-dialogs": "4.9.0-preview-128235",
-        "adaptive-expressions": "4.9.0-preview-128235",
-        "botbuilder-lg": "4.9.0-preview-128235",
+        "botbuilder": "4.9.0-rc5",
+        "botbuilder-dialogs": "4.9.0-rc5",
+        "botbuilder-dialogs-adaptive": "4.9.0-rc5",
+        "botbuilder-lg": "4.9.0-rc5",
+        "adaptive-expressions": "4.9.0-rc5",
         "dotenv": "^8.2.0",
-        "restify": "~8.4.0"
+        "restify": "~8.4.0",
+        "path": "^0.12.7"
     },
     "devDependencies": {
         "eslint": "^6.6.0",
