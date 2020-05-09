@@ -1,6 +1,6 @@
 # multi turn prompt sample
 
-This sample demonstrates using [Adaptive dialog][1] and [Language Generation][2] PREVIEW features to achieve the same functionality that the waterfall based cards sample [here][3].
+This sample demonstrates using [Adaptive dialog (JS-PREVIEW)][1] and [Language Generation][2] features to achieve the same functionality that the waterfall based cards sample [here][3].
 
 This sample uses preview packages available on [npmjs][4].
 

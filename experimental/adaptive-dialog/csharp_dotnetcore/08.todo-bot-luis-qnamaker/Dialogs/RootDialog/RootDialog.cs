@@ -91,15 +91,6 @@ namespace Microsoft.BotBuilderSamples
                              new BeginDialog(nameof(GetUserProfileDialog)),
                         },
                     },
-
-                    // Help and chitchat is handled by qna
-                    new OnQnAMatch
-                    {
-                        Actions = new List<Dialog>()
-                        {
-                            new CodeAction(this.ResolveAndSendQnAAnswer)
-                        },
-                    },
                     new OnIntent("Cancel")
                     {
                         Condition = "#Cancel.Score >= 0.8",
@@ -133,6 +124,135 @@ namespace Microsoft.BotBuilderSamples
                                 {
                                     new SendActivity("${CancelCancelled()}"),
                                     new SendActivity("${WelcomeActions()}"),
+                                },
+                            },
+                        },
+                    },
+                    // Help and chitchat is handled by qna
+                    new OnQnAMatch
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new CodeAction(this.ResolveAndSendQnAAnswer)
+                        },
+                    },
+                    // This trigger fires when the recognizers do not agree on who should win.
+                    // This enables you to write simple rules to pick a winner or ask the user for disambiguation.
+                    new OnChooseIntent()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new SetProperties()
+                            {
+                                Assignments = new List<PropertyAssignment>()
+                                {
+                                    // Get the recognition result values for each recognizer configured on this dialog by ID.
+                                    new PropertyAssignment()
+                                    {
+                                        Property = "dialog.luisResult",
+                                        Value = $"=jPath(turn.recognized, \"$.candidates[?(@.id == 'LUIS_{nameof(RootDialog)}')]\")"
+                                    },
+                                    new PropertyAssignment()
+                                    {
+                                        Property = "dialog.qnaResult",
+                                        Value = $"=jPath(turn.recognized, \"$.candidates[?(@.id == 'QnA_{nameof(RootDialog)}')]\")"
+                                    },
+                                }
+                            },
+
+                            // Rules to determine winner before disambiguation
+                            // Rule 1: High confidence result from LUIS and Low confidence result from QnA => Pick LUIS result
+                            new IfCondition()
+                            {
+                                Condition = "dialog.luisResult.score >= 0.9 && dialog.qnaResult.score <= 0.5",
+                                Actions = new List<Dialog>()
+                                {
+                                    // By Emitting a recognized intent event with the recognition result from LUIS, adaptive dialog
+                                    // will evaluate all triggers with that recognition result.
+                                    new EmitEvent()
+                                    {
+                                        EventName = AdaptiveEvents.RecognizedIntent,
+                                        EventValue = "=dialog.luisResult.result"
+                                    },
+                                    new BreakLoop()
+                                }
+                            },
+
+                            // Rule 2: High confidence result from QnA, Low confidence result from LUIS => Pick QnA result
+                            new IfCondition()
+                            {
+                                Condition = "dialog.luisResult.score <= 0.5 && dialog.qnaResult.score >= 0.9",
+                                Actions = new List<Dialog>()
+                                {
+                                    new EmitEvent()
+                                    {
+                                        EventName = AdaptiveEvents.RecognizedIntent,
+                                        EventValue = "=dialog.qnaResult.result"
+                                    },
+                                    new BreakLoop()
+                                }
+                            },
+
+                            // Rule 3: QnA has exact match (>=0.95) => Pick QnA result
+                            new IfCondition()
+                            {
+                                Condition = "dialog.qnaResult.score >= 0.95",
+                                Actions = new List<Dialog>()
+                                {
+                                    new EmitEvent()
+                                    {
+                                        EventName = AdaptiveEvents.RecognizedIntent,
+                                        EventValue = "=dialog.qnaResult.result"
+                                    },
+                                    new BreakLoop()
+                                }
+                            },
+
+                            // Rule 4: QnA came back with no match => Pick LUIS result
+                            new IfCondition()
+                            {
+                                Condition = "dialog.qnaResult.score <= 0.05",
+                                Actions = new List<Dialog>()
+                                {
+                                    new EmitEvent()
+                                    {
+                                        EventName = AdaptiveEvents.RecognizedIntent,
+                                        EventValue = "=dialog.luisResult.result"
+                                    },
+                                    new BreakLoop()
+                                }
+                            },
+
+                            // None of the rules were true. So ask user to disambiguate. 
+                            new TextInput()
+                            {
+                                Property = "turn.intentChoice",
+                                Prompt = new ActivityTemplate("${chooseIntentResponseWithCard()}"),
+                                // Adaptive card 'data' is automatically bound to entities or intent.
+                                // You can include 'intent':'value' in your adaptive card's data to pick that up as an intent.
+                                Value = "=@userChosenIntent",
+                                AlwaysPrompt = true,
+                                AllowInterruptions = false
+                            },
+
+                            // Decide which recognition result to use based on user response to disambiguation. 
+                            new IfCondition()
+                            {
+                                Condition = "turn.intentChoice != 'none'",
+                                Actions = new List<Dialog>()
+                                {
+                                    new EmitEvent()
+                                    {
+                                        EventName = AdaptiveEvents.RecognizedIntent,
+                                        EventValue = "=dialog[turn.intentChoice].result"
+                                    }
+                                },
+                                ElseActions = new List<Dialog>()
+                                {
+                                    new SendActivity()
+                                    {
+                                        Activity = new ActivityTemplate("Sure, no worries.")
+                                    }
                                 },
                             },
                         },

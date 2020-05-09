@@ -17,8 +17,8 @@
     },
     "dependencies": {
         "botbuilder": "4.9.0-rc5",
-        "botbuilder-dialogs-declarative": "4.9.0-rc5",
-        "botbuilder-dialogs-adaptive": "4.9.0-rc5",
+        "botbuilder-dialogs-declarative": "4.9.0-rc5-preview",
+        "botbuilder-dialogs-adaptive": "4.9.0-rc5-preview",
         "botbuilder-dialogs": "4.9.0-rc5",
         "dotenv": "^8.2.0",
         "restify": "~8.4.0"

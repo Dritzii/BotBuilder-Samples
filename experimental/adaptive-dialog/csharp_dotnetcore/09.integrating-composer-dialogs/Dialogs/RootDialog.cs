@@ -72,7 +72,7 @@ namespace Microsoft.BotBuilderSamples
 
             // Load and add adaptive dialog produced by composer.
             // Name of the dialog (.dialog file name) to find
-            var dialogResource = resourceExplorer.GetResource("<yourComposerBotName>.dialog");
+            var dialogResource = resourceExplorer.GetResource("main-without-luis.dialog");
             var composerDialog = resourceExplorer.LoadType<AdaptiveDialog>(dialogResource);
 
             // Add the dialog
@@ -120,20 +120,20 @@ namespace Microsoft.BotBuilderSamples
             // Without this, the child adaptive dialog will re-process the current activity.
             stepContext.State.SetValue("turn.activityProcessed", true);
 
-            return await stepContext.BeginDialogAsync("<yourComposerBotName>.dialog", adaptiveOptions, cancellationToken);
+            return await stepContext.BeginDialogAsync("main-without-luis.dialog", adaptiveOptions, cancellationToken);
         }
 
         private async Task<DialogTurnResult> DoSlotDialogAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if (stepContext.Result is IDictionary<string, object> result && result.Count > 0)
+            if (stepContext.Result is JObject result && result["fullname"] != null)
             {
                 // get the result and persist it in user state
                 var obj = await _userStateAccessor.GetAsync(stepContext.Context, () => new JObject());
                 obj["data"] = new JObject
                     {
                         { "fullname",  $"{result["fullname"]}" },
-                        { "shoesize", $"{result["shoesize"]}" },
-                        { "userage", $"{result["userage"]}" },
+                        { "shoesize", $"{result["shoeSize"]}" },
+                        { "userage", $"{result["age"]}" },
                     };
             }
 
@@ -155,6 +155,7 @@ namespace Microsoft.BotBuilderSamples
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text(obj["data"]["fullname"].Value<string>()), cancellationToken);
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text(obj["data"]["shoesize"].Value<string>()), cancellationToken);
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text(obj["data"]["address"].Value<string>()), cancellationToken);
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text(obj["data"]["userage"].Value<string>()), cancellationToken);
             }
 
             // Remember to call EndAsync to indicate to the runtime that this is the end of our waterfall.

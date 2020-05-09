@@ -11,6 +11,7 @@
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Adaptive" Version="4.9.0-rc4" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Version="4.9.0-rc4" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.9.0-rc4" />
+    <PackageReference Include="Microsoft.Bot.Builder.AI.LUIS" Version="4.9.0-rc4" />
   </ItemGroup>
 
   <ItemGroup>

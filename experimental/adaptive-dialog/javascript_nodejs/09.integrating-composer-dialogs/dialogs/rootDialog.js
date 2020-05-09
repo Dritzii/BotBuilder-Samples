@@ -54,7 +54,7 @@ class RootDialog extends ComponentDialog {
 
         // Load and add adaptive dialog produced by composer.
         // Name of the dialog (.dialog file name) to find
-        const dialogResource = resourceExplorer.getResource('Main.dialog');
+        const dialogResource = resourceExplorer.getResource('main-without-luis.dialog');
         const composerDialog = resourceExplorer.loadType(dialogResource);
         // give the dialog an ID, this defaults to the filename if missing.
         composerDialog.id = 'adaptive-main';
@@ -103,7 +103,7 @@ class RootDialog extends ComponentDialog {
         const fullname = values.fullname;
         await step.context.sendActivity(`Your name is ${ fullname.first } ${ fullname.last }.`);
 
-        await step.context.sendActivity(`You wear a size ${ values.shoesize } shoes.`);
+        await step.context.sendActivity(`You wear a size ${ values.shoeSize } shoes.`);
 
         const address = values.address.values;
         await step.context.sendActivity(`Your address is: ${ address.street }, ${ address.city } ${ address.zip }`);
