@@ -1,8 +1,8 @@
-﻿# EchoBot
+﻿# Interruptions Bot
 
-Bot Framework v4 echo bot sample.
+Bot Framework v4 Interruption bot sample.
 
-This bot has been created using [Bot Framework](https://dev.botframework.com), it shows how to create a simple bot that accepts input from the user and echoes it back.
+This bot has been created using [Bot Framework](https://dev.botframework.com), it shows how to create a bot that uses [LUIS](https://luis.ai) and adaptive dialogs to achieve advanced LU concepts such as interruption handling, flexible entity extraction.
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
   # determine dotnet version
   dotnet --version
   ```
-  - Install required [Luis applications](#LUIS-Setup) required for this sample.
+- Install required [Luis applications](#LUIS-Setup) required for this sample.
 
 ## To try this sample
 
@@ -52,7 +52,7 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 - File -> Open Bot
 - Enter a Bot URL of `http://localhost:3978/api/messages`
 
-LUIS Setup
+## LUIS Setup
 ### Using CLI
 - Install [nodejs][2] version 10.14 or higher
 - Install required CLI tools
