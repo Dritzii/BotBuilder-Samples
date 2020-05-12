@@ -25,7 +25,8 @@ class RootDialog extends ComponentDialog {
                 new OnIntent("Cancel", [], [
                     new ConfirmInput().configure({
                         prompt: new ActivityTemplate('${RootCancelConfirm()}'),
-                        property: new StringExpression('turn.confirm')
+                        property: new StringExpression('turn.confirm'),
+                        allowInterruptions: new BoolExpression("false")
                     }),
                     new IfCondition().configure(
                     {

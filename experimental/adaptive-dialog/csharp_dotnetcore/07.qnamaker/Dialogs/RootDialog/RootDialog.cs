@@ -54,43 +54,31 @@ namespace Microsoft.BotBuilderSamples
                         Condition = "count(turn.recognized.answers[0].context.prompts) > 0",
                         Actions = new List<Dialog>()
                         {
-                            new SetProperties()
+                            new SetProperty()
                             {
-                                Assignments = new List<PropertyAssignment>()
-                                {
-                                    new PropertyAssignment()
-                                    {
-                                        Property = "dialog.qnaContext",
-                                        Value = "=turn.recognized.answers[0].context.prompts"
-                                    },
-                                    
-                                    //new PropertyAssignment()
-                                    //{
-                                    //    Property = "dialog.qnaContext.PreviousQnAId",
-                                    //    Value = "=turn.recognized.answers[0].id"
-                                    //},
-                                    //new PropertyAssignment()
-                                    //{
-                                    //    Property = "dialog.qnaContext.previousUserQuery",
-                                    //    Value = "=turn.recognized.text"
-                                    //},
-                                    //new PropertyAssignment()
-                                    //{
-                                    //    Property = "dialog.qna.multiTurn.context",
-                                    //    Value = "=turn.recognized.answers[0].context.prompts"
-                                    //}
-                                }
+                                Property = "dialog.qnaContext",
+                                Value = "=turn.recognized.answers[0].context.prompts"
                             },
                             new TextInput()
                             {
                                 Prompt = new ActivityTemplate("${ShowMultiTurnAnswer()}"),
                                 Property = "turn.qnaMultiTurnResponse",
-                                AllowInterruptions = "false",
+                                
+                                // We want the user to respond to the follow up prompt. Do not allow interruptions.
+                                AllowInterruptions = false,
+                                
+                                // Since we can have multiple instances of follow up prompts within a single turn, set this to always prompt. 
+                                // Alternate to doing this is to delete the 'turn.qnaMultiTurnResponse' property before the EmitEvent.
+                                AlwaysPrompt = true
                             },
                             new SetProperty()
                             {
                                 Property = "turn.qnaMatchFromContext",
                                 Value = "=where(dialog.qnaContext, item, item.displayText == turn.qnaMultiTurnResponse)"
+                            },
+                            new DeleteProperty()
+                            {
+                                Property = "dialog.qnaContext"
                             },
                             new IfCondition()
                             {
@@ -106,13 +94,6 @@ namespace Microsoft.BotBuilderSamples
                                     {
                                         EventName = DialogEvents.ActivityReceived,
                                         EventValue = "=turn.activity"
-                                    }
-                                },
-                                ElseActions = new List<Dialog>()
-                                {
-                                    new DeleteProperty()
-                                    {
-                                        Property = "dialog.qnaContext"
                                     }
                                 }
                             }
@@ -173,9 +154,6 @@ namespace Microsoft.BotBuilderSamples
                 EndpointKey = configuration["qna:endpointKey"],
                 KnowledgeBaseId = configuration["qna:qnamakerSampleBot_en_us_qna"],
                
-                // property path that holds qna context
-                Context = "dialog.qnaContext",
-
                 // Property path where previous qna id is set. This is required to have multi-turn QnA working.
                 QnAId = "turn.qnaIdFromPrompt",
 

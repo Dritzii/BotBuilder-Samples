@@ -16,8 +16,9 @@ class RootDialog extends ComponentDialog {
             recognizer: this.createQnAMakerRecognizer(),
             triggers: [
                 new OnConversationUpdateActivity(this.welcomeUserSteps()),
+
+                // This trigger matches if the response from your QnA KB has follow up prompts.
                 new OnQnAMatch([
-                    new SendActivity("Detected multi-turn"),
                     new SetProperty().configure({
                         property: new StringExpression("dialog.qnaContext"),
                         value: new ValueExpression("=turn.recognized.answers[0].context.prompts")
@@ -25,13 +26,19 @@ class RootDialog extends ComponentDialog {
                     new TextInput().configure({
                         prompt: new ActivityTemplate('${ShowMultiTurnAnswer()}'),
                         property: new StringExpression('turn.qnaMultiTurnResponse'),
+                        // We want the user to respond to the follow up prompt. Do not allow interruptions.
+                        allowInterruptions: new BoolExpression("false"),
+                        // Since we can have multiple instances of follow up prompts within a single turn, set this to always prompt. 
+                        // Alternate to doing this is to delete the 'turn.qnaMultiTurnResponse' property before the EmitEvent.
+                        alwaysPrompt: new BoolExpression("true")
                     }),
-                    new SendActivity('I have ${turn.qnaMultiTurnResponse}'),
                     new SetProperty().configure({
                         property: new StringExpression("turn.qnaMatchFromContext"),
                         value: new ValueExpression("=where(dialog.qnaContext, item, item.displayText == turn.qnaMultiTurnResponse)")
                     }),
-                    new SendActivity("I have ${turn.qnaMatchFromContext}"),
+                    new DeleteProperty().configure({
+                        property: new StringExpression("dialog.qnaContext")
+                    }),
                     new IfCondition().configure({
                         condition: new BoolExpression("turn.qnaMatchFromContext && count(turn.qnaMatchFromContext) > 0"),
                         actions: [
@@ -43,14 +50,11 @@ class RootDialog extends ComponentDialog {
                                 eventName: new StringExpression(DialogEvents.activityReceived),
                                 eventValue: new ValueExpression("=turn.activity")
                             })
-                        ],
-                        elseActions: [
-                            new DeleteProperty().configure({
-                                property: new StringExpression("dialog.qnaContext")
-                            })
                         ]
                     })
                 ], "count(turn.recognized.answers[0].context.prompts) > 0"),
+
+                // This trigger matches if the response from your QnA KB does not have follow up prompts.
                 new OnQnAMatch([
                     new SendActivity("Here is what I have from the KB - ${@Answer}")
                 ]),
@@ -74,8 +78,6 @@ class RootDialog extends ComponentDialog {
         qnaRecognizer.hostname = new StringExpression(process.env.HostName);
         qnaRecognizer.knowledgeBaseId = new StringExpression(process.env.KnowledgeBaseId);
         qnaRecognizer.endpointKey = new StringExpression(process.env.EndpointKey);
-        // property path that holds qna context
-        qnaRecognizer.context = new ObjectExpression("dialog.qnaContext");
 
         // Property path where previous qna id is set. This is required to have multi-turn QnA working.
         qnaRecognizer.qnaId = new IntExpression("turn.qnaIdFromPrompt");
