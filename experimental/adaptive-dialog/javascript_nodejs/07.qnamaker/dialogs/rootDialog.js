@@ -1,7 +1,7 @@
 const { DialogEvents, ComponentDialog } = require('botbuilder-dialogs');
 const { OnUnknownIntent, DeleteProperty, EmitEvent, ActivityTemplate, TextInput, SetProperty, OnQnAMatch, QnAMakerRecognizer, ForEach, OnConversationUpdateActivity, IfCondition, AdaptiveDialog, SendActivity, TemplateEngineLanguageGenerator } = require('botbuilder-dialogs-adaptive');
 const { Templates } = require('botbuilder-lg');
-const { ValueExpression, StringExpression, BoolExpression } = require('adaptive-expressions');
+const { IntExpression, ObjectExpression, ValueExpression, StringExpression, BoolExpression } = require('adaptive-expressions');
 
 const path = require('path');
 
@@ -17,41 +17,43 @@ class RootDialog extends ComponentDialog {
             triggers: [
                 new OnConversationUpdateActivity(this.welcomeUserSteps()),
                 new OnQnAMatch([
+                    new SendActivity("Detected multi-turn"),
+                    new SetProperty().configure({
+                        property: new StringExpression("dialog.qnaContext"),
+                        value: new ValueExpression("=turn.recognized.answers[0].context.prompts")
+                    }),
+                    new TextInput().configure({
+                        prompt: new ActivityTemplate('${ShowMultiTurnAnswer()}'),
+                        property: new StringExpression('turn.qnaMultiTurnResponse'),
+                    }),
+                    new SendActivity('I have ${turn.qnaMultiTurnResponse}'),
+                    new SetProperty().configure({
+                        property: new StringExpression("turn.qnaMatchFromContext"),
+                        value: new ValueExpression("=where(dialog.qnaContext, item, item.displayText == turn.qnaMultiTurnResponse)")
+                    }),
+                    new SendActivity("I have ${turn.qnaMatchFromContext}"),
+                    new IfCondition().configure({
+                        condition: new BoolExpression("turn.qnaMatchFromContext && count(turn.qnaMatchFromContext) > 0"),
+                        actions: [
+                            new SetProperty().configure({
+                                property: new StringExpression("turn.qnaIdFromPrompt"),
+                                value: new ValueExpression("=turn.qnaMatchFromContext[0].qnaId")
+                            }),
+                            new EmitEvent().configure({
+                                eventName: new StringExpression(DialogEvents.activityReceived),
+                                eventValue: new ValueExpression("=turn.activity")
+                            })
+                        ],
+                        elseActions: [
+                            new DeleteProperty().configure({
+                                property: new StringExpression("dialog.qnaContext")
+                            })
+                        ]
+                    })
+                ], "count(turn.recognized.answers[0].context.prompts) > 0"),
+                new OnQnAMatch([
                     new SendActivity("Here is what I have from the KB - ${@Answer}")
                 ]),
-                // new OnQnAMatch([
-                //     new SetProperty().configure({
-                //         property: new StringExpression("dialog.qnaContext"),
-                //         value: new ValueExpression("=turn.recognized.answers[0].context.prompts")
-                //     }),
-                //     new TextInput().configure({
-                //         prompt: new ActivityTemplate("(${ShowMultiTurnAnswer()}"),
-                //         property: new StringExpression("turn.qnaMultiTurnResponse"),
-                //         allowInterruptions: new BoolExpression("false")
-                //     }),
-                //     new SetProperty().configure({
-                //         property: new StringExpression("turn.qnaMatchFromContext"),
-                //         value: new ValueExpression("=where(dialog.qnaContext, item, item.displayText == turn.qnaMultiTurnResponse)")
-                //     }),
-                //     new IfCondition().configure({
-                //         condition: new BoolExpression("turn.qnaMatchFromContext && count(turn.qnaMatchFromContext) > 0"),
-                //         actions: [
-                //             new SetProperty().configure({
-                //                 property: new StringExpression("turn.qnaIdFromPrompt"),
-                //                 value: new ValueExpression("=turn.qnaMatchFromContext[0].qnaId")
-                //             }),
-                //             new EmitEvent().configure({
-                //                 eventName: new StringExpression(DialogEvents.activityReceived),
-                //                 eventValue: new ValueExpression("=turn.activity")
-                //             })
-                //         ],
-                //         elseActions: [
-                //             new DeleteProperty().configure({
-                //                 property: new StringExpression("dialog.qnaContext")
-                //             })
-                //         ]
-                //     })
-                // ], "count(turn.recognized.answers[0].context.prompts) > 0"),
                 new OnUnknownIntent([
                     new SendActivity("${UnknownReadBack()}")
                 ])
@@ -71,7 +73,15 @@ class RootDialog extends ComponentDialog {
         let qnaRecognizer = new QnAMakerRecognizer();
         qnaRecognizer.hostname = new StringExpression(process.env.HostName);
         qnaRecognizer.knowledgeBaseId = new StringExpression(process.env.KnowledgeBaseId);
-        qnaRecognizer.endpointKey = new StringExpression(process.env.EndpointKey)
+        qnaRecognizer.endpointKey = new StringExpression(process.env.EndpointKey);
+        // property path that holds qna context
+        qnaRecognizer.context = new ObjectExpression("dialog.qnaContext");
+
+        // Property path where previous qna id is set. This is required to have multi-turn QnA working.
+        qnaRecognizer.qnaId = new IntExpression("turn.qnaIdFromPrompt");
+
+        // Disable automatically including dialog name as meta data filter on calls to QnA Maker.
+        qnaRecognizer.includeDialogNameInMetadata = new BoolExpression("false");
         return qnaRecognizer;
     }
 
