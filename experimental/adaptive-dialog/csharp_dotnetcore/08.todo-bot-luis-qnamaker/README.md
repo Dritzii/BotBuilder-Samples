@@ -58,7 +58,7 @@ This sample uses packages available on the [BotBuilder MyGet feed][4].
 - Install [nodejs][2] version 10.14 or higher
 - Install required CLI tools
 ```bash
-> npm i -g luis-apis @microsoft/botframework-cli
+> npm i -g @microsoft/botframework-cli
 ```
 - In a command prompt, navigate to `botbuilder-samples/experimental/adaptive-dialog/csharp_dotnetcore/06.todo-bot/Dialogs
 > cd 06.todo-bot/Dialogs
@@ -71,8 +71,8 @@ This sample uses packages available on the [BotBuilder MyGet feed][4].
 ```
 - This command writes out a bunch of .dialog files (which are useful if you are using declarative form of adaptive dialogs) as well as luis.settings.\<youralias>.\<region>.json file. 
 - Add the application IDs for the created applications from luis.settings.\<youralias>.\<region>.json to appsettings.
-- Run qnamaker:build to create/ update, train and publish QnA Maker KBs required to run this bot. The content for the KB comes from .qna files under dialogs.
 - Get your [QnA Maker subscription key](https://docs.microsoft.com/en-us/azure/cognitive-services/QnAMaker/how-to/set-up-qnamaker-service-azure#create-a-new-qna-maker-service)
+- Run qnamaker:build to create/ update, train and publish QnA Maker KBs required to run this bot. The content for the KB comes from .qna files under dialogs.
 ```bash
 > bf qnamaker:build --in ..\generated --out ..\generated --botName TodoBotWithLuisAndQnA --log --subscriptionKey <Your QnA subscription key>
 ```
