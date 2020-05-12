@@ -1,4 +1,4 @@
-﻿# EchoBot
+﻿# QnAMaker Bot
 
 Bot Framework v4 qnamaker bot sample.
 
@@ -67,6 +67,21 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 ```
 - This command writes out a bunch of .dialog files (which are useful if you are using declarative form of adaptive dialogs) as well as qnamaker.settings.\<youralias>.\<region>.json file. 
 - Add the KB IDs for the created applications from qnamaker.settings.\<youralias>.\<region>.json to appsettings.json
+```jsonc
+// Example qnamaker.settings.<alias>.<region>.json file.
+{
+    "qna": {
+        // copy these to appsettings.json
+        "QnAMakerSample_en_us_qna": "",
+        "hostname": ""
+    }
+}
+```
+- Get your EndpointKey using the following command
+```bash
+> bf qnamaker:endpointkeys:list --subscriptionKey <your-subscription-key>
+```
+This command will write out your primary and secondary keys. Copy either key to `qna:endpointKey` in the appsettings.json file.
 
 ## Deploy the bot to Azure
 
