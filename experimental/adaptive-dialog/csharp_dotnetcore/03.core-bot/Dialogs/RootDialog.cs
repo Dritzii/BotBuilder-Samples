@@ -11,6 +11,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
+using AdaptiveExpressions.Properties;
 
 namespace Microsoft.BotBuilderSamples
 {
@@ -152,6 +153,12 @@ namespace Microsoft.BotBuilderSamples
                                 Property = "conversation.flightBooking.departureDate",
                                 Prompt = new ActivityTemplate("${PromptForMissingInformation()}"),
                                 AllowInterruptions = "!@datetime",
+                                Validations = new List<BoolExpression>()
+                                {
+                                    // Prebuilt function that returns boolean true if we have a full, valid date.
+                                    "isDefinite(this.value[0].timex)"
+                                },
+                                InvalidPrompt = new ActivityTemplate("${Date.Invalid()}"),
                                 // Value is an expression. Take any date time entity recognition as deparature date.
                                 Value = "=@datetime.timex[0]"
                             },
