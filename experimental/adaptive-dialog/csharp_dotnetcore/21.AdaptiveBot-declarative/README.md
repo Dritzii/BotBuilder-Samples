@@ -42,5 +42,9 @@ This bot has a number of sample dialogs which are defined using declarative .dia
 - Enter a Bot URL of `http://localhost:3978/api/messages`
 
 
-
+# Further reading
+- [Adaptive dialogs](https://aka.ms/adaptive-dialogs)
+- [.lu file format](https://aka.ms/lu-file-format)
+- [.lg file format](https://aka.ms/lg-file-format)
+- [.qna file format](https://aka.ms/qna-file-format)
  

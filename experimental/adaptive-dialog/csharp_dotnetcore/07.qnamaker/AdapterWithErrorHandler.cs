@@ -21,7 +21,8 @@ namespace Microsoft.BotBuilderSamples
         {
             this.Use(new RegisterClassMiddleware<IConfiguration>(configuration));
             this.UseStorage(storage);
-            this.UseState(userState, conversationState);
+            this.UseBotState(userState);
+            this.UseBotState(conversationState);
 
             _lgFile = Templates.ParseFile(Path.Combine(".", "AdapterWithErrorHandler.lg"));
 

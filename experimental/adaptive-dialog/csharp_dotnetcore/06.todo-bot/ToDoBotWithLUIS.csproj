@@ -36,12 +36,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Folder Include="generated\" />
-    <None Remove="Dialogs\AddToDoDialog\AddToDoDialog.lu" />
-    <None Remove="Dialogs\Common\Common.lg" />
-    <None Remove="Dialogs\DeleteToDoDialog\DeleteToDoDialog.lu" />
-    <None Remove="Dialogs\GetUserProfileDialog\GetUserProfileDialog.lg" />
-    <None Remove="Dialogs\GetUserProfileDialog\GetUserProfileDialog.lu" />
-    <None Remove="Dialogs\ViewToDoDialog\ViewToDoDialog.lu" />
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

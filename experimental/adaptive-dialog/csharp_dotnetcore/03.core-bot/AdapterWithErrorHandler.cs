@@ -4,7 +4,6 @@
 using System;
 using System.IO;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
@@ -22,7 +21,8 @@ namespace Microsoft.BotBuilderSamples
             : base(credentialProvider)
         {
             this.UseStorage(storage);
-            this.UseState(userState, conversationState);
+            this.UseBotState(userState);
+            this.UseBotState(conversationState);
 
             string[] paths = { ".", "AdapterWithErrorHandler.lg" };
             string fullPath = Path.Combine(paths);

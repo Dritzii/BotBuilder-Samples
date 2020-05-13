@@ -1,12 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-//
-// Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.3.0
 
-using System;
-using Microsoft.AspNetCore;
+using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.BotBuilderSamples
@@ -15,22 +14,37 @@ namespace Microsoft.BotBuilderSamples
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost
-                .CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((hostingContext, config) =>
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+
+                .ConfigureAppConfiguration((hostingConetxt, config) =>
                 {
-                    // add luis LU model environment settings
-                    var env = hostingContext.HostingEnvironment;
-                    var luisAuthoringRegion = Environment.GetEnvironmentVariable("LUIS_AUTHORING_REGION") ?? "westus";
-                    config.AddJsonFile($"luis.settings.{env.EnvironmentName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: true);
-                    config.AddJsonFile($"luis.settings.{Environment.UserName}.{luisAuthoringRegion}.json", optional: true, reloadOnChange: true);
-                    config.AddJsonFile($"appsettings.json", optional: true, reloadOnChange: true);
+                    var di = new DirectoryInfo(".");
+                    foreach (var file in di.GetFiles($"appsettings.json", SearchOption.AllDirectories))
+                    {
+                        var relative = file.FullName.Substring(di.FullName.Length);
+                        if (!relative.Contains("bin\\") && !relative.Contains("obj\\"))
+                        {
+                            config.AddJsonFile(file.FullName, optional: false, reloadOnChange: true);
+                        }
+                    }
                 })
-            .UseStartup<Startup>()
-            .Build();
+
+                .ConfigureAppConfiguration((hostingContext, builder) =>
+                {
+                    builder.UseLuisSettings();
+                })
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.ConfigureLogging((logging) =>
+                    {
+                        logging.AddDebug();
+                        logging.AddConsole();
+                    });
+                    webBuilder.UseStartup<Startup>();
+                });
     }
 }

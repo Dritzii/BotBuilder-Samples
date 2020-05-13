@@ -6,6 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="AdapterWithErrorHandler.lg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="AdapterWithErrorHandler.lg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.1" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.9.0" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Adaptive" Version="4.9.0" />
@@ -13,10 +23,18 @@
     <PackageReference Include="Microsoft.Bot.Builder.LanguageGeneration" Version="4.9.0" />
     <PackageReference Include="Microsoft.Bot.Builder.AI.Luis" Version="4.9.0" />
     <PackageReference Include="AdaptiveExpressions" Version="4.9.0" />
-    <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Debugging" Version="4.9.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="**/*.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="**/*.lg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="**/*.lu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

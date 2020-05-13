@@ -1,7 +1,5 @@
 ﻿using System;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
@@ -19,8 +17,8 @@ namespace Microsoft.BotBuilderSamples
         {
             this.Use(new RegisterClassMiddleware<IConfiguration>(configuration));
             this.UseStorage(storage);
-            this.UseState(userState, conversationState);
-            this.UseDebugger(configuration.GetValue<int>("debugport", 4712), events: new Events<AdaptiveEvents>());
+            this.UseBotState(userState);
+            this.UseBotState(conversationState);
 
             this.OnTurnError = async (turnContext, exception) =>
             {

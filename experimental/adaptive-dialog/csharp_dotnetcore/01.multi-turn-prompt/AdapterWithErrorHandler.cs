@@ -19,7 +19,8 @@ namespace Microsoft.BotBuilderSamples
             : base(credentialProvider)
         {
             this.UseStorage(storage);
-            this.UseState(userState, conversationState);
+            this.UseBotState(userState);
+            this.UseBotState(conversationState);
 
             string[] paths = { ".", "AdapterWithErrorHandler.lg" };
             string fullPath = Path.Combine(paths);
